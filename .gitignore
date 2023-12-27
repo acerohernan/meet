@@ -65,3 +65,9 @@ bower_components
 psd
 thumb
 sketch
+
+# tmp
+tmp/
+
+# config
+config.yaml
