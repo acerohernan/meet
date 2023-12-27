@@ -2,12 +2,12 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/acerohernan/meet/pkg/config"
+	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service"
 	"github.com/urfave/cli/v2"
 )
@@ -50,6 +50,12 @@ func startServer(ctx *cli.Context) error {
 		return err
 	}
 
+	err = logger.InitLogger(conf.Logger)
+
+	if err != nil {
+		return err
+	}
+
 	server, err := service.InitializeServer(conf)
 
 	if err != nil {
@@ -61,7 +67,7 @@ func startServer(ctx *cli.Context) error {
 
 	go func() {
 		sig := <-sigChan
-		fmt.Print("exit requersted, shutting down. ", "signal: ", sig)
+		logger.Infow("exit requersted, shutting down. ", "signal", sig)
 		server.Stop()
 	}()
 

@@ -7,7 +7,12 @@ import (
 )
 
 type Config struct {
-	Port int `yaml:"port"`
+	Port   int           `yaml:"port"`
+	Logger *LoggerConfig `yaml:"logger"`
+}
+
+type LoggerConfig struct {
+	Level string `yaml:"level"`
 }
 
 func NewConfig(configString string) (*Config, error) {

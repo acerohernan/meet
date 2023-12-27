@@ -7,6 +7,7 @@ import (
 
 	twirpv1 "github.com/acerohernan/meet/core/twirp/v1"
 	"github.com/acerohernan/meet/pkg/config"
+	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/rs/cors"
 	"golang.org/x/sync/errgroup"
 )
@@ -63,12 +64,12 @@ func (s *Server) Start() error {
 	// listen for errors in http server
 	go func() {
 		if err := httpGroup.Wait(); err != http.ErrServerClosed {
-			fmt.Print("could not start the server: ", err)
+			logger.Errow("could not start the server: ", err)
 			s.Stop()
 		}
 	}()
 
-	fmt.Print("listening on http://localhost:", s.conf.Port)
+	logger.Infow("http server running!", "url", fmt.Sprint("http://localhost:", s.conf.Port))
 
 	<-s.doneChan
 
@@ -77,7 +78,7 @@ func (s *Server) Start() error {
 
 func (s *Server) Stop() error {
 	if err := s.httpServer.Close(); err != nil {
-		fmt.Print("Error at closing http server", err)
+		logger.Errow("Error at closing http server", err)
 	}
 
 	close(s.doneChan)
