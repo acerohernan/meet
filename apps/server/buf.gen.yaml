@@ -1,0 +1,13 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: github.com/acerohernan/meet/core
+
+plugins:
+  - name: go # Synonym with : protoc-gen-<name>
+    out: core
+    opt: paths=source_relative
+  - name: twirp
+    out: core
+    opt: paths=source_relative

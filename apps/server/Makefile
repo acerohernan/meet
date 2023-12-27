@@ -5,3 +5,6 @@ dev:
 
 watch:
 	air
+
+protoc:
+	buf generate ../../packages/proto
