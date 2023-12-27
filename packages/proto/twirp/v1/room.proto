@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package twirp.v1;
+
+service RoomService {
+    rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse) {}
+}
+
+message CreateRoomRequest {
+    string email = 1;
+}
+
+message CreateRoomResponse {}
