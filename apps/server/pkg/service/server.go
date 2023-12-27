@@ -8,7 +8,9 @@ import (
 	twirpv1 "github.com/acerohernan/meet/core/twirp/v1"
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/config/logger"
+	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/rs/cors"
+	"github.com/urfave/negroni"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -18,7 +20,7 @@ type Server struct {
 	doneChan   chan struct{}
 }
 
-func NewServer(conf *config.Config, roomSvc *RoomService) *Server {
+func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc *RoomService) *Server {
 	mux := http.NewServeMux()
 
 	roomServer := twirpv1.NewRoomServiceServer(roomSvc)
@@ -29,21 +31,35 @@ func NewServer(conf *config.Config, roomSvc *RoomService) *Server {
 		w.Write([]byte("OK"))
 	})
 
-	// CORS is allowed, the authentication is made with JWT
-	handler := cors.New(cors.Options{
-		AllowOriginFunc: func(origin string) bool {
-			return true
-		},
-		AllowedHeaders: []string{"*"},
-		// allow preflight to be cached for a day
-		MaxAge: 86400,
-	})
+	middlewares := []negroni.Handler{
+		negroni.NewRecovery(),
+
+		// CORS is allowed, the authentication is made with JWT
+		cors.New(cors.Options{
+			AllowOriginFunc: func(origin string) bool {
+				return true
+			},
+			AllowedHeaders: []string{"*"},
+			// allow preflight to be cached for a day
+			MaxAge: 86400,
+		}),
+
+		authMiddleware,
+	}
+
+	handler := negroni.New()
+
+	for _, m := range middlewares {
+		handler.Use(m)
+	}
+
+	handler.UseHandler(mux)
 
 	return &Server{
 		conf:     conf,
 		doneChan: make(chan struct{}),
 		httpServer: &http.Server{
-			Handler: handler.Handler(mux),
+			Handler: handler,
 		},
 	}
 }

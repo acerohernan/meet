@@ -11,6 +11,7 @@ import (
 
 func InitializeServer(conf *config.Config) (*Server, error) {
 	wire.Build(
+		auth.NewAuthMiddleware,
 		auth.NewAuthService,
 		NewRoomService,
 		NewServer,

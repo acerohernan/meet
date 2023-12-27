@@ -4,17 +4,13 @@ import (
 	"context"
 
 	twirpv1 "github.com/acerohernan/meet/core/twirp/v1"
-	"github.com/acerohernan/meet/pkg/service/auth"
 )
 
 type RoomService struct {
-	authSvc *auth.AuthService
 }
 
-func NewRoomService(authSvc *auth.AuthService) *RoomService {
-	return &RoomService{
-		authSvc: authSvc,
-	}
+func NewRoomService() *RoomService {
+	return &RoomService{}
 }
 
 func (s *RoomService) CreateRoom(ctx context.Context, req *twirpv1.CreateRoomRequest) (*twirpv1.CreateRoomResponse, error) {

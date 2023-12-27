@@ -15,7 +15,8 @@ import (
 
 func InitializeServer(conf *config.Config) (*Server, error) {
 	authService := auth.NewAuthService(conf)
-	roomService := NewRoomService(authService)
-	server := NewServer(conf, roomService)
+	authMiddleware := auth.NewAuthMiddleware(authService)
+	roomService := NewRoomService()
+	server := NewServer(conf, authMiddleware, roomService)
 	return server, nil
 }
