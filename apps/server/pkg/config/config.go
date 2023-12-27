@@ -9,10 +9,16 @@ import (
 type Config struct {
 	Port   int           `yaml:"port"`
 	Logger *LoggerConfig `yaml:"logger"`
+	JWT    *JWTConfig    `yaml:"jwt"`
 }
 
 type LoggerConfig struct {
 	Level string `yaml:"level"`
+}
+
+type JWTConfig struct {
+	Secret string `yaml:"secret"`
+	Issuer string `yaml:"issuer"`
 }
 
 func NewConfig(configString string) (*Config, error) {

@@ -8,12 +8,14 @@ package service
 
 import (
 	"github.com/acerohernan/meet/pkg/config"
+	"github.com/acerohernan/meet/pkg/service/auth"
 )
 
 // Injectors from wire.go:
 
 func InitializeServer(conf *config.Config) (*Server, error) {
-	roomService := NewRoomService()
+	authService := auth.NewAuthService(conf)
+	roomService := NewRoomService(authService)
 	server := NewServer(conf, roomService)
 	return server, nil
 }

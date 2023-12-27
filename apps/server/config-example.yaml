@@ -1,3 +1,6 @@
 port: 3001
 logger:
   level: debug
+jwt:
+  issuer: issuer
+  secret: secret
