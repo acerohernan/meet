@@ -9,3 +9,6 @@ brew install bufbuild/buf/buf
 # TODO: install
 # protoc
 # proto-gen-twirp
+
+# dependency injection
+go install github.com/google/wire/cmd/wire@latest

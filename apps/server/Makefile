@@ -8,3 +8,6 @@ watch:
 
 protoc:
 	buf generate ../../packages/proto
+
+wire:
+	cd pkg/service && wire

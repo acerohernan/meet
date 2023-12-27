@@ -50,7 +50,11 @@ func startServer(ctx *cli.Context) error {
 		return err
 	}
 
-	server := service.NewServer(conf)
+	server, err := service.InitializeServer(conf)
+
+	if err != nil {
+		return err
+	}
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)

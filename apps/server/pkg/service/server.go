@@ -17,10 +17,9 @@ type Server struct {
 	doneChan   chan struct{}
 }
 
-func NewServer(conf *config.Config) *Server {
+func NewServer(conf *config.Config, roomSvc *RoomService) *Server {
 	mux := http.NewServeMux()
 
-	roomSvc := NewRoomService()
 	roomServer := twirpv1.NewRoomServiceServer(roomSvc)
 	mux.Handle(roomServer.PathPrefix(), roomServer)
 
