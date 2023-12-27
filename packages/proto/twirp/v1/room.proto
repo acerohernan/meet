@@ -10,4 +10,6 @@ message CreateRoomRequest {
     string email = 1;
 }
 
-message CreateRoomResponse {}
+message CreateRoomResponse {
+    string session_id = 1;
+}

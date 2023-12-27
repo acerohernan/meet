@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 
+	twirpv1 "github.com/acerohernan/meet/core/twirp/v1"
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/rs/cors"
 	"golang.org/x/sync/errgroup"
@@ -19,8 +20,13 @@ type Server struct {
 func NewServer(conf *config.Config) *Server {
 	mux := http.NewServeMux()
 
+	roomSvc := NewRoomService()
+	roomServer := twirpv1.NewRoomServiceServer(roomSvc)
+	mux.Handle(roomServer.PathPrefix(), roomServer)
+
+	// health check
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("works!"))
+		w.Write([]byte("OK"))
 	})
 
 	// CORS is allowed, the authentication is made with JWT
