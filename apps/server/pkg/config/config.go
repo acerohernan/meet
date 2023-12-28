@@ -10,6 +10,7 @@ type Config struct {
 	Port   int           `yaml:"port"`
 	Logger *LoggerConfig `yaml:"logger"`
 	JWT    *JWTConfig    `yaml:"jwt"`
+	Router *RouterConfig `yaml:"router"`
 }
 
 type LoggerConfig struct {
@@ -19,6 +20,9 @@ type LoggerConfig struct {
 type JWTConfig struct {
 	Secret string `yaml:"secret"`
 	Issuer string `yaml:"issuer"`
+}
+type RouterConfig struct {
+	Region string `yaml:"region"`
 }
 
 func NewConfig(configString string) (*Config, error) {

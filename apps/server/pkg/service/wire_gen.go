@@ -9,6 +9,8 @@ package service
 import (
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/service/auth"
+	"github.com/acerohernan/meet/pkg/service/router"
+	"github.com/acerohernan/meet/pkg/service/storage"
 )
 
 // Injectors from wire.go:
@@ -16,7 +18,15 @@ import (
 func InitializeServer(conf *config.Config) (*Server, error) {
 	authService := auth.NewAuthService(conf)
 	authMiddleware := auth.NewAuthMiddleware(authService)
-	roomService := NewRoomService()
-	server := NewServer(conf, authMiddleware, roomService)
+	inMemoryStorage := getInMemoryStorage(conf)
+	routerRouter := router.NewRouter(conf, inMemoryStorage)
+	roomService := NewRoomService(routerRouter)
+	server := NewServer(conf, authMiddleware, roomService, routerRouter)
 	return server, nil
+}
+
+// wire.go:
+
+func getInMemoryStorage(conf *config.Config) storage.InMemoryStorage {
+	return storage.NewLocalStorage()
 }

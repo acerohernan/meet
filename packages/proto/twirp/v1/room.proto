@@ -7,9 +7,10 @@ service RoomService {
 }
 
 message CreateRoomRequest {
-    string email = 1;
+    string name = 1;
 }
 
 message CreateRoomResponse {
-    string session_id = 1;
+    string access_token = 1;
+    string room_id = 2;
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/auth"
+	"github.com/acerohernan/meet/pkg/service/router"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 	"golang.org/x/sync/errgroup"
@@ -17,10 +18,11 @@ import (
 type Server struct {
 	conf       *config.Config
 	httpServer *http.Server
+	router     *router.Router
 	doneChan   chan struct{}
 }
 
-func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc *RoomService) *Server {
+func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc *RoomService, router *router.Router) *Server {
 	mux := http.NewServeMux()
 
 	roomServer := twirpv1.NewRoomServiceServer(roomSvc)
@@ -61,6 +63,7 @@ func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc
 		httpServer: &http.Server{
 			Handler: handler,
 		},
+		router: router,
 	}
 }
 
@@ -87,6 +90,15 @@ func (s *Server) Start() error {
 
 	logger.Infow("http server running!", "url", fmt.Sprint("http://localhost:", s.conf.Port))
 
+	// start router
+	localNode, err := s.router.Start()
+
+	if err != nil {
+		return err
+	}
+
+	logger.Infow("node started successfully", "nodeID", localNode.Id)
+
 	<-s.doneChan
 
 	return nil
@@ -94,7 +106,14 @@ func (s *Server) Start() error {
 
 func (s *Server) Stop() error {
 	if err := s.httpServer.Close(); err != nil {
-		logger.Errow("Error at closing http server", err)
+		logger.Errow("error at closing http server", err)
+	}
+
+	// start router
+	err := s.router.Stop()
+
+	if err != nil {
+		logger.Errow("error at stopping router", err)
 	}
 
 	close(s.doneChan)

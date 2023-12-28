@@ -11,3 +11,9 @@ protoc:
 
 wire:
 	cd pkg/service && wire
+
+gen:
+	go generate ./...
+
+test:
+	go test -v ./...

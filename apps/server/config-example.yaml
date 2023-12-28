@@ -1,4 +1,6 @@
 port: 3001
+router:
+  region: us-east-1
 logger:
   level: debug
 jwt:
