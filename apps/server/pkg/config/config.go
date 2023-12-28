@@ -11,6 +11,7 @@ type Config struct {
 	Logger *LoggerConfig `yaml:"logger"`
 	JWT    *JWTConfig    `yaml:"jwt"`
 	Router *RouterConfig `yaml:"router"`
+	Redis  *RedisConfig  `yaml:"redis"`
 }
 
 type LoggerConfig struct {
@@ -23,6 +24,14 @@ type JWTConfig struct {
 }
 type RouterConfig struct {
 	Region string `yaml:"region"`
+}
+
+type RedisConfig struct {
+	Address  string `yaml:"address"`
+	UseTLS   bool   `yaml:"use_tls"`
+	DB       int    `yaml:"db"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 func NewConfig(configString string) (*Config, error) {

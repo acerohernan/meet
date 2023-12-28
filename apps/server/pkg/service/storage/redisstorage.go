@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/acerohernan/meet/core"
+	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/proto"
 )
@@ -18,6 +19,7 @@ type RedisStorage struct {
 }
 
 func NewRedisStorage(rc redis.UniversalClient) *RedisStorage {
+	logger.Infow("using redis storage as in-memory storage")
 	return &RedisStorage{
 		rc:  rc,
 		ctx: context.Background(),

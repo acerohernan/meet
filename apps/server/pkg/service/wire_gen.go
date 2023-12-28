@@ -11,6 +11,7 @@ import (
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
 	"github.com/acerohernan/meet/pkg/service/storage"
+	"github.com/acerohernan/meet/pkg/utils"
 )
 
 // Injectors from wire.go:
@@ -28,5 +29,11 @@ func InitializeServer(conf *config.Config) (*Server, error) {
 // wire.go:
 
 func getInMemoryStorage(conf *config.Config) storage.InMemoryStorage {
+	rc := utils.CreateRedisClient(conf.Redis)
+
+	if rc != nil {
+		return storage.NewRedisStorage(rc)
+	}
+
 	return storage.NewLocalStorage()
 }

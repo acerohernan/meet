@@ -6,3 +6,9 @@ logger:
 jwt:
   issuer: issuer
   secret: secret
+redis:
+  address: redis.host:6379
+  use_tls: false
+  db: 0
+  username: myuser
+  password: mypassword

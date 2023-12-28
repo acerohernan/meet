@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/acerohernan/meet/core"
+	"github.com/acerohernan/meet/pkg/config/logger"
 )
 
 type LocalStorage struct {
@@ -14,6 +15,7 @@ type LocalStorage struct {
 }
 
 func NewLocalStorage() *LocalStorage {
+	logger.Infow("using local storage as in-memory storage")
 	return &LocalStorage{
 		mu:    sync.RWMutex{},
 		nodes: make(map[string]*core.Node),

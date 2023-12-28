@@ -8,6 +8,7 @@ import (
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
 	"github.com/acerohernan/meet/pkg/service/storage"
+	"github.com/acerohernan/meet/pkg/utils"
 	"github.com/google/wire"
 )
 
@@ -25,6 +26,12 @@ func InitializeServer(conf *config.Config) (*Server, error) {
 }
 
 func getInMemoryStorage(conf *config.Config) storage.InMemoryStorage {
+	rc := utils.CreateRedisClient(conf.Redis)
+
+	if rc != nil {
+		return storage.NewRedisStorage(rc)
+	}
+
 	return storage.NewLocalStorage()
 }
 
