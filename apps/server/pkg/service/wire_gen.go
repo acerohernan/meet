@@ -20,7 +20,11 @@ func InitializeServer(conf *config.Config) (*Server, error) {
 	authService := auth.NewAuthService(conf)
 	authMiddleware := auth.NewAuthMiddleware(authService)
 	inMemoryStorage := getInMemoryStorage(conf)
-	routerRouter := router.NewRouter(conf, inMemoryStorage)
+	monitor, err := router.NewMonitor()
+	if err != nil {
+		return nil, err
+	}
+	routerRouter := router.NewRouter(conf, inMemoryStorage, monitor)
 	roomService := NewRoomService(routerRouter)
 	server := NewServer(conf, authMiddleware, roomService, routerRouter)
 	return server, nil

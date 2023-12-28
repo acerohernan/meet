@@ -15,6 +15,7 @@ import (
 func InitializeServer(conf *config.Config) (*Server, error) {
 	wire.Build(
 		getInMemoryStorage,
+		router.NewMonitor,
 		router.NewRouter,
 		auth.NewAuthMiddleware,
 		auth.NewAuthService,

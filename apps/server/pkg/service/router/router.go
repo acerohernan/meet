@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"errors"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -26,9 +27,10 @@ type Router struct {
 	doneChan  chan struct{}
 	localNode *core.Node
 	running   atomic.Bool
+	monitor   Monitor
 }
 
-func NewRouter(conf *config.Config, store storage.InMemoryStorage) *Router {
+func NewRouter(conf *config.Config, store storage.InMemoryStorage, monitor Monitor) *Router {
 	return &Router{
 		mu:       sync.RWMutex{},
 		ctx:      context.Background(),
@@ -36,6 +38,7 @@ func NewRouter(conf *config.Config, store storage.InMemoryStorage) *Router {
 		conf:     conf.Router,
 		doneChan: make(chan struct{}),
 		running:  atomic.Bool{},
+		monitor:  monitor,
 	}
 }
 
@@ -95,10 +98,7 @@ func (r *Router) statsWorker() {
 				return
 			}
 
-			// TODO: Update cpu and memory stats
-			r.mu.Lock()
-			r.localNode.Stats.UpdatedAt = time.Now().Unix()
-			r.mu.Unlock()
+			r.updateNodeStats()
 
 			r.mu.RLock()
 			err := r.store.StoreNode(r.ctx, r.localNode)
@@ -109,6 +109,22 @@ func (r *Router) statsWorker() {
 			r.mu.RUnlock()
 		}
 	}
+}
+
+func (r *Router) updateNodeStats() error {
+	cpuUsage, err := r.monitor.GetCpuUsage()
+	memUsage, err := r.monitor.GetMemUsage()
+
+	if err != nil {
+		return err
+	}
+
+	r.mu.Lock()
+	r.localNode.Stats.UpdatedAt = time.Now().Unix()
+	r.localNode.Stats.CpuLoad = cpuUsage
+	r.localNode.Stats.MemoryLoad = memUsage
+	r.mu.Unlock()
+	return nil
 }
 
 func (r *Router) GetAvaliableNode() (*core.Node, error) {
@@ -136,6 +152,7 @@ func createLocalNode(region string) *core.Node {
 		Stats: &core.NodeStats{
 			StartedAt: time.Now().Unix(),
 			UpdatedAt: time.Now().Unix(),
+			NumCpus:   uint32(runtime.NumCPU()),
 		},
 	}
 }

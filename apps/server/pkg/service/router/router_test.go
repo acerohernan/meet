@@ -7,6 +7,7 @@ import (
 
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/service/router"
+	"github.com/acerohernan/meet/pkg/service/router/routerfakes"
 	"github.com/acerohernan/meet/pkg/service/storage"
 	"github.com/acerohernan/meet/pkg/service/storage/storagefakes"
 	"github.com/stretchr/testify/assert"
@@ -57,7 +58,8 @@ func TestRouterMustDeleteNodeAfterStop(t *testing.T) {
 	router.StatsTickerInterval = time.Second * 1
 	conf := &config.Config{Router: &config.RouterConfig{}}
 	store := storage.NewLocalStorage()
-	r := router.NewRouter(conf, store)
+	mon := &routerfakes.FakeMonitor{}
+	r := router.NewRouter(conf, store, mon)
 
 	_, err := r.Start()
 	assert.NoError(t, err)
@@ -77,6 +79,7 @@ func TestRouterMustDeleteNodeAfterStop(t *testing.T) {
 func createTestRouter() *router.Router {
 	conf := &config.Config{Router: &config.RouterConfig{}}
 	store := &storagefakes.FakeInMemoryStorage{}
+	mon := &routerfakes.FakeMonitor{}
 
-	return router.NewRouter(conf, store)
+	return router.NewRouter(conf, store, mon)
 }
