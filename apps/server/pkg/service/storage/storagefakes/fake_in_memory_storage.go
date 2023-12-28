@@ -10,11 +10,12 @@ import (
 )
 
 type FakeInMemoryStorage struct {
-	DeleteNodeStub        func(context.Context, string) error
+	DeleteNodeStub        func(context.Context, string, string) error
 	deleteNodeMutex       sync.RWMutex
 	deleteNodeArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
+		arg3 string
 	}
 	deleteNodeReturns struct {
 		result1 error
@@ -22,10 +23,11 @@ type FakeInMemoryStorage struct {
 	deleteNodeReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ListNodesStub        func(context.Context) ([]*core.Node, error)
+	ListNodesStub        func(context.Context, string) ([]*core.Node, error)
 	listNodesMutex       sync.RWMutex
 	listNodesArgsForCall []struct {
 		arg1 context.Context
+		arg2 string
 	}
 	listNodesReturns struct {
 		result1 []*core.Node
@@ -35,11 +37,12 @@ type FakeInMemoryStorage struct {
 		result1 []*core.Node
 		result2 error
 	}
-	StoreNodeStub        func(context.Context, *core.Node) error
+	StoreNodeStub        func(context.Context, string, *core.Node) error
 	storeNodeMutex       sync.RWMutex
 	storeNodeArgsForCall []struct {
 		arg1 context.Context
-		arg2 *core.Node
+		arg2 string
+		arg3 *core.Node
 	}
 	storeNodeReturns struct {
 		result1 error
@@ -51,19 +54,20 @@ type FakeInMemoryStorage struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInMemoryStorage) DeleteNode(arg1 context.Context, arg2 string) error {
+func (fake *FakeInMemoryStorage) DeleteNode(arg1 context.Context, arg2 string, arg3 string) error {
 	fake.deleteNodeMutex.Lock()
 	ret, specificReturn := fake.deleteNodeReturnsOnCall[len(fake.deleteNodeArgsForCall)]
 	fake.deleteNodeArgsForCall = append(fake.deleteNodeArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-	}{arg1, arg2})
+		arg3 string
+	}{arg1, arg2, arg3})
 	stub := fake.DeleteNodeStub
 	fakeReturns := fake.deleteNodeReturns
-	fake.recordInvocation("DeleteNode", []interface{}{arg1, arg2})
+	fake.recordInvocation("DeleteNode", []interface{}{arg1, arg2, arg3})
 	fake.deleteNodeMutex.Unlock()
 	if stub != nil {
-		return stub(arg1, arg2)
+		return stub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
@@ -77,17 +81,17 @@ func (fake *FakeInMemoryStorage) DeleteNodeCallCount() int {
 	return len(fake.deleteNodeArgsForCall)
 }
 
-func (fake *FakeInMemoryStorage) DeleteNodeCalls(stub func(context.Context, string) error) {
+func (fake *FakeInMemoryStorage) DeleteNodeCalls(stub func(context.Context, string, string) error) {
 	fake.deleteNodeMutex.Lock()
 	defer fake.deleteNodeMutex.Unlock()
 	fake.DeleteNodeStub = stub
 }
 
-func (fake *FakeInMemoryStorage) DeleteNodeArgsForCall(i int) (context.Context, string) {
+func (fake *FakeInMemoryStorage) DeleteNodeArgsForCall(i int) (context.Context, string, string) {
 	fake.deleteNodeMutex.RLock()
 	defer fake.deleteNodeMutex.RUnlock()
 	argsForCall := fake.deleteNodeArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeInMemoryStorage) DeleteNodeReturns(result1 error) {
@@ -113,18 +117,19 @@ func (fake *FakeInMemoryStorage) DeleteNodeReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeInMemoryStorage) ListNodes(arg1 context.Context) ([]*core.Node, error) {
+func (fake *FakeInMemoryStorage) ListNodes(arg1 context.Context, arg2 string) ([]*core.Node, error) {
 	fake.listNodesMutex.Lock()
 	ret, specificReturn := fake.listNodesReturnsOnCall[len(fake.listNodesArgsForCall)]
 	fake.listNodesArgsForCall = append(fake.listNodesArgsForCall, struct {
 		arg1 context.Context
-	}{arg1})
+		arg2 string
+	}{arg1, arg2})
 	stub := fake.ListNodesStub
 	fakeReturns := fake.listNodesReturns
-	fake.recordInvocation("ListNodes", []interface{}{arg1})
+	fake.recordInvocation("ListNodes", []interface{}{arg1, arg2})
 	fake.listNodesMutex.Unlock()
 	if stub != nil {
-		return stub(arg1)
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -138,17 +143,17 @@ func (fake *FakeInMemoryStorage) ListNodesCallCount() int {
 	return len(fake.listNodesArgsForCall)
 }
 
-func (fake *FakeInMemoryStorage) ListNodesCalls(stub func(context.Context) ([]*core.Node, error)) {
+func (fake *FakeInMemoryStorage) ListNodesCalls(stub func(context.Context, string) ([]*core.Node, error)) {
 	fake.listNodesMutex.Lock()
 	defer fake.listNodesMutex.Unlock()
 	fake.ListNodesStub = stub
 }
 
-func (fake *FakeInMemoryStorage) ListNodesArgsForCall(i int) context.Context {
+func (fake *FakeInMemoryStorage) ListNodesArgsForCall(i int) (context.Context, string) {
 	fake.listNodesMutex.RLock()
 	defer fake.listNodesMutex.RUnlock()
 	argsForCall := fake.listNodesArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeInMemoryStorage) ListNodesReturns(result1 []*core.Node, result2 error) {
@@ -177,19 +182,20 @@ func (fake *FakeInMemoryStorage) ListNodesReturnsOnCall(i int, result1 []*core.N
 	}{result1, result2}
 }
 
-func (fake *FakeInMemoryStorage) StoreNode(arg1 context.Context, arg2 *core.Node) error {
+func (fake *FakeInMemoryStorage) StoreNode(arg1 context.Context, arg2 string, arg3 *core.Node) error {
 	fake.storeNodeMutex.Lock()
 	ret, specificReturn := fake.storeNodeReturnsOnCall[len(fake.storeNodeArgsForCall)]
 	fake.storeNodeArgsForCall = append(fake.storeNodeArgsForCall, struct {
 		arg1 context.Context
-		arg2 *core.Node
-	}{arg1, arg2})
+		arg2 string
+		arg3 *core.Node
+	}{arg1, arg2, arg3})
 	stub := fake.StoreNodeStub
 	fakeReturns := fake.storeNodeReturns
-	fake.recordInvocation("StoreNode", []interface{}{arg1, arg2})
+	fake.recordInvocation("StoreNode", []interface{}{arg1, arg2, arg3})
 	fake.storeNodeMutex.Unlock()
 	if stub != nil {
-		return stub(arg1, arg2)
+		return stub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
@@ -203,17 +209,17 @@ func (fake *FakeInMemoryStorage) StoreNodeCallCount() int {
 	return len(fake.storeNodeArgsForCall)
 }
 
-func (fake *FakeInMemoryStorage) StoreNodeCalls(stub func(context.Context, *core.Node) error) {
+func (fake *FakeInMemoryStorage) StoreNodeCalls(stub func(context.Context, string, *core.Node) error) {
 	fake.storeNodeMutex.Lock()
 	defer fake.storeNodeMutex.Unlock()
 	fake.StoreNodeStub = stub
 }
 
-func (fake *FakeInMemoryStorage) StoreNodeArgsForCall(i int) (context.Context, *core.Node) {
+func (fake *FakeInMemoryStorage) StoreNodeArgsForCall(i int) (context.Context, string, *core.Node) {
 	fake.storeNodeMutex.RLock()
 	defer fake.storeNodeMutex.RUnlock()
 	argsForCall := fake.storeNodeArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeInMemoryStorage) StoreNodeReturns(result1 error) {

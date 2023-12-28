@@ -56,7 +56,7 @@ func TestStatsWorkerMustUpdate(t *testing.T) {
 func TestRouterMustDeleteNodeAfterStop(t *testing.T) {
 	// overwrite
 	router.StatsTickerInterval = time.Second * 1
-	conf := &config.Config{Router: &config.RouterConfig{}}
+	conf := &config.Config{Router: &config.RouterConfig{Region: "region-test"}}
 	store := storage.NewLocalStorage()
 	mon := &routerfakes.FakeMonitor{}
 	r := router.NewRouter(conf, store, mon)
@@ -64,16 +64,16 @@ func TestRouterMustDeleteNodeAfterStop(t *testing.T) {
 	_, err := r.Start()
 	assert.NoError(t, err)
 
-	nodes, err := store.ListNodes(context.Background())
+	nodes, err := store.ListNodes(context.Background(), "region-test")
 	t.Log(nodes)
-	assert.Equal(t, len(nodes), 1)
+	assert.Equal(t, 1, len(nodes))
 
 	time.Sleep(time.Second * 1)
 	err = r.Stop()
 
-	nodes, err = store.ListNodes(context.Background())
+	nodes, err = store.ListNodes(context.Background(), "region-test")
 	t.Log(nodes)
-	assert.Equal(t, len(nodes), 0)
+	assert.Equal(t, 0, len(nodes))
 }
 
 func createTestRouter() *router.Router {

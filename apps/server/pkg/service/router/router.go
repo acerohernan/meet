@@ -53,7 +53,7 @@ func (r *Router) Start() (*core.Node, error) {
 	r.localNode = createLocalNode(r.conf.Region)
 
 	// store local node
-	if err := r.store.StoreNode(r.ctx, r.localNode); err != nil {
+	if err := r.store.StoreNode(r.ctx, r.localNode.Region, r.localNode); err != nil {
 		return nil, err
 	}
 
@@ -71,9 +71,11 @@ func (r *Router) Stop() error {
 
 	close(r.doneChan)
 
-	if err := r.store.DeleteNode(r.ctx, r.localNode.Id); err != nil {
+	r.mu.RLock()
+	if err := r.store.DeleteNode(r.ctx, r.localNode.Region, r.localNode.Id); err != nil {
 		return err
 	}
+	r.mu.RUnlock()
 
 	return nil
 }
@@ -101,7 +103,7 @@ func (r *Router) statsWorker() {
 			r.updateNodeStats()
 
 			r.mu.RLock()
-			err := r.store.StoreNode(r.ctx, r.localNode)
+			err := r.store.StoreNode(r.ctx, r.localNode.Region, r.localNode)
 
 			if err != nil {
 				logger.Errow("error at storing new stats for local node", err)
@@ -128,7 +130,7 @@ func (r *Router) updateNodeStats() error {
 }
 
 func (r *Router) GetAvaliableNode() (*core.Node, error) {
-	nodes, err := r.store.ListNodes(r.ctx)
+	nodes, err := r.store.ListNodes(r.ctx, r.localNode.Region)
 	if err != nil {
 		return nil, err
 	}
@@ -137,12 +139,22 @@ func (r *Router) GetAvaliableNode() (*core.Node, error) {
 		return nil, NotFoundAvaliableNode
 	}
 
-	// TODO: improve it with selection logic depending of each node stats and proximity
-	if len(nodes) == 1 {
-		return nodes[0], nil
+	var avaliable *core.Node
+
+	for _, n := range nodes {
+		// filter nodes with greater cpu 80% of cpu usage and 80% o memory usage
+		if n.Stats.CpuLoad > 80 || n.Stats.MemoryLoad > 90 {
+			continue
+		}
+
+		avaliable = n
 	}
 
-	return nil, nil
+	if avaliable == nil {
+		return nil, NotFoundAvaliableNode
+	}
+
+	return avaliable, nil
 }
 
 func createLocalNode(region string) *core.Node {

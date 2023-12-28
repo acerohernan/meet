@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	NodesKey = "nodes"
+	NodesPrefix = "nodes:"
 )
 
 type RedisStorage struct {
@@ -26,18 +26,22 @@ func NewRedisStorage(rc redis.UniversalClient) *RedisStorage {
 	}
 }
 
-func (s *RedisStorage) StoreNode(_ context.Context, node *core.Node) error {
+func (s *RedisStorage) StoreNode(_ context.Context, region string, node *core.Node) error {
+	key := NodesPrefix + region
+
 	data, err := proto.Marshal(node)
 
 	if err != nil {
 		return err
 	}
 
-	return s.rc.HSet(s.ctx, NodesKey, node.Id, data).Err()
+	return s.rc.HSet(s.ctx, key, node.Id, data).Err()
 }
 
-func (s *RedisStorage) ListNodes(ctx context.Context) ([]*core.Node, error) {
-	items, err := s.rc.HVals(s.ctx, NodesKey).Result()
+func (s *RedisStorage) ListNodes(ctx context.Context, region string) ([]*core.Node, error) {
+	key := NodesPrefix + region
+
+	items, err := s.rc.HVals(s.ctx, key).Result()
 
 	if err != nil {
 		return nil, err
@@ -60,6 +64,7 @@ func (s *RedisStorage) ListNodes(ctx context.Context) ([]*core.Node, error) {
 	return nodes, nil
 }
 
-func (s *RedisStorage) DeleteNode(ctx context.Context, nodeID string) error {
-	return s.rc.HDel(s.ctx, NodesKey, nodeID).Err()
+func (s *RedisStorage) DeleteNode(ctx context.Context, region string, nodeID string) error {
+	key := NodesPrefix + region
+	return s.rc.HDel(s.ctx, key, nodeID).Err()
 }

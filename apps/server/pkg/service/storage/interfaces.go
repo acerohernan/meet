@@ -10,7 +10,7 @@ import (
 
 //counterfeiter:generate . InMemoryStorage
 type InMemoryStorage interface {
-	StoreNode(ctx context.Context, node *core.Node) error
-	ListNodes(ctx context.Context) ([]*core.Node, error)
-	DeleteNode(ctx context.Context, nodeID string) error
+	StoreNode(ctx context.Context, region string, node *core.Node) error
+	ListNodes(ctx context.Context, region string) ([]*core.Node, error)
+	DeleteNode(ctx context.Context, region string, nodeID string) error
 }
