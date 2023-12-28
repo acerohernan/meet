@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package core;
+
+message Node {
+    string id = 1;
+    string region = 2;
+    NodeStats stats = 3;
+}
+
+message NodeStats {
+    int64 started_at = 1;
+    int64 updated_at = 2;
+
+    // room
+    int32 num_rooms = 4;
+    int32 num_participants = 5;
+
+    // system
+    uint32 num_cpus = 6;
+    float cpu_load = 7;
+    float memory_load = 8;
+}
+
+message NodeMessage {
+    oneof message {
+        CreateRoom create_room = 1;
+    }
+}
+
+message CreateRoom {}
