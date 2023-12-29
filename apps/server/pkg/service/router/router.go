@@ -10,6 +10,7 @@ import (
 	"github.com/acerohernan/meet/core"
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/config/logger"
+	"github.com/acerohernan/meet/pkg/service/rtc"
 	"github.com/acerohernan/meet/pkg/service/storage"
 )
 
@@ -21,15 +22,16 @@ type Router struct {
 	mu        sync.RWMutex
 	ctx       context.Context
 	conf      *config.RouterConfig
-	store     storage.InMemoryStorage
+	store     storage.ObjectStore
 	doneChan  chan struct{}
 	localNode *core.Node
 	running   atomic.Bool
 	monitor   Monitor
 	messenger Messenger
+	manager   *rtc.RoomManager
 }
 
-func NewRouter(conf *config.Config, localNode *core.Node, store storage.InMemoryStorage, monitor Monitor, messenger Messenger) *Router {
+func NewRouter(conf *config.Config, localNode *core.Node, store storage.ObjectStore, monitor Monitor, messenger Messenger, manager *rtc.RoomManager) *Router {
 	return &Router{
 		mu:        sync.RWMutex{},
 		ctx:       context.Background(),
@@ -40,6 +42,7 @@ func NewRouter(conf *config.Config, localNode *core.Node, store storage.InMemory
 		monitor:   monitor,
 		messenger: messenger,
 		localNode: localNode,
+		manager:   manager,
 	}
 }
 
@@ -167,7 +170,9 @@ func (r *Router) messageWorker() {
 		case <-r.doneChan:
 			return
 		case msg := <-r.messenger.ReadChan():
-			logger.Infow("node message recived", "msg", msg)
+			if err := r.handleNodeMessage(msg); err != nil {
+				logger.Errow("an error ocurred at handling node message", err)
+			}
 		}
 	}
 }

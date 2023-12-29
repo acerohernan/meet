@@ -10,6 +10,7 @@ const (
 
 var (
 	NodePrefix = "NO_"
+	RoomPrefix = "NO_"
 )
 
 func NewId(prefix string) string {

@@ -9,6 +9,7 @@ import (
 	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
+	"github.com/acerohernan/meet/pkg/service/rtc"
 	"github.com/acerohernan/meet/pkg/service/storage"
 	"github.com/acerohernan/meet/pkg/utils"
 	"github.com/google/wire"
@@ -19,8 +20,9 @@ func InitializeServer(conf *config.Config, localNode *core.Node) (*Server, error
 	wire.Build(
 		getRedisClient,
 		getMessenger,
-		getInMemoryStorage,
+		getObjectStore,
 		router.NewMonitor,
+		rtc.NewRoomManager,
 		router.NewRouter,
 		auth.NewAuthMiddleware,
 		auth.NewAuthService,
@@ -42,7 +44,7 @@ func getRedisClient(conf *config.Config) redis.UniversalClient {
 	return rc
 }
 
-func getInMemoryStorage(rc redis.UniversalClient) storage.InMemoryStorage {
+func getObjectStore(rc redis.UniversalClient) storage.ObjectStore {
 	if rc != nil {
 		return storage.NewRedisStorage(rc)
 	}

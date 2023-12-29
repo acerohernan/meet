@@ -12,6 +12,7 @@ import (
 	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
+	"github.com/acerohernan/meet/pkg/service/rtc"
 	"github.com/acerohernan/meet/pkg/service/storage"
 	"github.com/acerohernan/meet/pkg/utils"
 	"github.com/redis/go-redis/v9"
@@ -23,14 +24,15 @@ func InitializeServer(conf *config.Config, localNode *core.Node) (*Server, error
 	authService := auth.NewAuthService(conf)
 	authMiddleware := auth.NewAuthMiddleware(authService)
 	universalClient := getRedisClient(conf)
-	inMemoryStorage := getInMemoryStorage(universalClient)
+	objectStore := getObjectStore(universalClient)
 	monitor, err := router.NewMonitor()
 	if err != nil {
 		return nil, err
 	}
 	messenger := getMessenger(universalClient, localNode)
-	routerRouter := router.NewRouter(conf, localNode, inMemoryStorage, monitor, messenger)
-	roomService := NewRoomService(routerRouter)
+	roomManager := rtc.NewRoomManager(objectStore)
+	routerRouter := router.NewRouter(conf, localNode, objectStore, monitor, messenger, roomManager)
+	roomService := NewRoomService(routerRouter, roomManager)
 	server := NewServer(conf, authMiddleware, roomService, routerRouter)
 	return server, nil
 }
@@ -48,7 +50,7 @@ func getRedisClient(conf *config.Config) redis.UniversalClient {
 	return rc
 }
 
-func getInMemoryStorage(rc redis.UniversalClient) storage.InMemoryStorage {
+func getObjectStore(rc redis.UniversalClient) storage.ObjectStore {
 	if rc != nil {
 		return storage.NewRedisStorage(rc)
 	}
