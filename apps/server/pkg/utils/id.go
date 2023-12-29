@@ -9,8 +9,9 @@ const (
 )
 
 var (
-	NodePrefix = "NO_"
-	RoomPrefix = "NO_"
+	NodePrefix        = "NO_"
+	RoomPrefix        = "RO_"
+	ParticipantPrefix = "PA_"
 )
 
 func NewId(prefix string) string {

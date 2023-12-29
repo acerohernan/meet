@@ -8,6 +8,7 @@ service RoomService {
 
 message CreateRoomRequest {
     string name = 1;
+    string room_id = 2;
 }
 
 message CreateRoomResponse {
