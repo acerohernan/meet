@@ -14,13 +14,22 @@ type LocalStorage struct {
 	nodes map[string]map[string]*core.Node
 	// map of roomID -> Room
 	rooms map[string]*core.Room
+	// map of participantID -> Participant
+	participants map[string]*core.Participant
+	// map of roomID -> nodeID
+	roomNodes map[string]string
+	// map of participantID -> nodeID
+	participantNodes map[string]string
 }
 
 func NewLocalStorage() *LocalStorage {
 	logger.Infow("using local storage as in-memory storage")
 	return &LocalStorage{
-		mu:    sync.RWMutex{},
-		nodes: make(map[string]map[string]*core.Node),
+		mu:               sync.RWMutex{},
+		nodes:            make(map[string]map[string]*core.Node),
+		rooms:            make(map[string]*core.Room),
+		roomNodes:        make(map[string]string),
+		participantNodes: make(map[string]string),
 	}
 }
 
@@ -103,4 +112,90 @@ func (s *LocalStorage) ListRooms(ctx context.Context) ([]*core.Room, error) {
 		rooms = append(rooms, r)
 	}
 	return rooms, nil
+}
+
+func (s *LocalStorage) GetNodeForRoom(ctx context.Context, roomID string) (string, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	nodeID := s.roomNodes[roomID]
+	if nodeID == "" {
+		return "", NodeForRoomNotFoundErr
+	}
+	return nodeID, nil
+}
+
+func (s *LocalStorage) SetNodeForRoom(ctx context.Context, roomID string, nodeID string) error {
+	s.mu.Lock()
+	s.roomNodes[roomID] = nodeID
+	s.mu.Unlock()
+	return nil
+}
+
+func (s *LocalStorage) DeleteNodeForRoom(ctx context.Context, roomID string) error {
+	s.mu.Lock()
+	delete(s.roomNodes, roomID)
+	s.mu.Unlock()
+	return nil
+}
+
+func (s *LocalStorage) StoreParticipant(ctx context.Context, roomID string, participant *core.Participant) error {
+	s.mu.Lock()
+	s.participants[participant.Id] = participant
+	s.mu.Unlock()
+	return nil
+}
+
+func (s *LocalStorage) LoadParticipant(ctx context.Context, roomID string, participantID string) (*core.Participant, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	p := s.participants[participantID]
+	if p == nil {
+		return nil, ParticipantNotFoundErr
+	}
+	return p, nil
+}
+
+func (s *LocalStorage) DeleteParticipant(ctx context.Context, roomID string, participantID string) error {
+	s.mu.Lock()
+	delete(s.participants, participantID)
+	s.mu.Unlock()
+	return nil
+}
+
+func (s *LocalStorage) ListParticipants(ctx context.Context, roomID string) ([]*core.Participant, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	participants := make([]*core.Participant, 0)
+	for _, r := range s.participants {
+		participants = append(participants, r)
+	}
+	return participants, nil
+}
+
+func (s *LocalStorage) GetNodeForParticipant(ctx context.Context, participantID string) (string, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	nodeID := s.participantNodes[participantID]
+	if nodeID == "" {
+		return "", NodeForParticipantNotFoundErr
+	}
+	return nodeID, nil
+}
+
+func (s *LocalStorage) SetNodeForParticipant(ctx context.Context, participantID string, nodeID string) error {
+	s.mu.Lock()
+	s.participantNodes[participantID] = nodeID
+	s.mu.Unlock()
+	return nil
+}
+
+func (s *LocalStorage) DeleteNodeForParticipant(ctx context.Context, participantID string) error {
+	s.mu.Lock()
+	delete(s.participantNodes, participantID)
+	s.mu.Unlock()
+	return nil
 }
