@@ -7,8 +7,28 @@ import {
 } from "@mui/material";
 import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { serverService } from "@/services/server";
 
 export const HomePage = () => {
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  async function createMeeting() {
+    setLoading(true);
+
+    try {
+      const room = await serverService.createRoom();
+      setLoading(false);
+      navigate(`/${room.id}`);
+    } catch (err) {
+      console.error("error at create meeting", err);
+      setLoading(false);
+    }
+  }
+
   return (
     <Box
       width="100%"
@@ -60,6 +80,8 @@ export const HomePage = () => {
             size="large"
             css={{ fontWeight: 300, fontSize: "1.1rem", flexShrink: 0 }}
             startIcon={<VideocamOutlinedIcon />}
+            onClick={createMeeting}
+            disabled={loading}
           >
             New meeting
           </Button>
