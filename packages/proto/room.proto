@@ -11,3 +11,12 @@ message Room {
     uint32 max_duration = 5;
 }
 
+message Participant {
+    string id = 1;
+    string name = 2;
+    ParticipantPermissions permissions = 3;
+}
+
+message ParticipantPermissions {
+    bool room_admin = 1;
+}
