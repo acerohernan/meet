@@ -3,7 +3,6 @@ package router
 import (
 	"context"
 	"errors"
-	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -12,7 +11,6 @@ import (
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/storage"
-	"github.com/acerohernan/meet/pkg/utils"
 )
 
 var (
@@ -28,17 +26,20 @@ type Router struct {
 	localNode *core.Node
 	running   atomic.Bool
 	monitor   Monitor
+	messenger Messenger
 }
 
-func NewRouter(conf *config.Config, store storage.InMemoryStorage, monitor Monitor) *Router {
+func NewRouter(conf *config.Config, localNode *core.Node, store storage.InMemoryStorage, monitor Monitor, messenger Messenger) *Router {
 	return &Router{
-		mu:       sync.RWMutex{},
-		ctx:      context.Background(),
-		store:    store,
-		conf:     conf.Router,
-		doneChan: make(chan struct{}),
-		running:  atomic.Bool{},
-		monitor:  monitor,
+		mu:        sync.RWMutex{},
+		ctx:       context.Background(),
+		store:     store,
+		conf:      conf.Router,
+		doneChan:  make(chan struct{}),
+		running:   atomic.Bool{},
+		monitor:   monitor,
+		messenger: messenger,
+		localNode: localNode,
 	}
 }
 
@@ -50,14 +51,13 @@ func (r *Router) Start() (*core.Node, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.localNode = createLocalNode(r.conf.Region)
-
 	// store local node
 	if err := r.store.StoreNode(r.ctx, r.localNode.Region, r.localNode); err != nil {
 		return nil, err
 	}
 
 	go r.statsWorker()
+	go r.messageWorker()
 
 	r.running.Store(true)
 
@@ -85,32 +85,6 @@ func (r *Router) GetLocalNode() *core.Node {
 	defer r.mu.RUnlock()
 
 	return r.localNode
-}
-
-func (r *Router) statsWorker() {
-	ticker := time.NewTicker(StatsTickerInterval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-r.doneChan:
-			return
-		case <-ticker.C:
-			if !r.running.Load() {
-				return
-			}
-
-			r.updateNodeStats()
-
-			r.mu.RLock()
-			err := r.store.StoreNode(r.ctx, r.localNode.Region, r.localNode)
-
-			if err != nil {
-				logger.Errow("error at storing new stats for local node", err)
-			}
-			r.mu.RUnlock()
-		}
-	}
 }
 
 func (r *Router) updateNodeStats() error {
@@ -157,14 +131,43 @@ func (r *Router) GetAvaliableNode() (*core.Node, error) {
 	return avaliable, nil
 }
 
-func createLocalNode(region string) *core.Node {
-	return &core.Node{
-		Id:     utils.NewId(utils.NodePrefix),
-		Region: region,
-		Stats: &core.NodeStats{
-			StartedAt: time.Now().Unix(),
-			UpdatedAt: time.Now().Unix(),
-			NumCpus:   uint32(runtime.NumCPU()),
-		},
+func (r *Router) SendNodeMessage(nodeID string, msg *core.NodeMessage) error {
+	return r.messenger.WriteMessage(nodeID, msg)
+}
+
+func (r *Router) statsWorker() {
+	ticker := time.NewTicker(StatsTickerInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-r.doneChan:
+			return
+		case <-ticker.C:
+			if !r.running.Load() {
+				return
+			}
+
+			r.updateNodeStats()
+
+			r.mu.RLock()
+			err := r.store.StoreNode(r.ctx, r.localNode.Region, r.localNode)
+
+			if err != nil {
+				logger.Errow("error at storing new stats for local node", err)
+			}
+			r.mu.RUnlock()
+		}
+	}
+}
+
+func (r *Router) messageWorker() {
+	for {
+		select {
+		case <-r.doneChan:
+			return
+		case msg := <-r.messenger.ReadChan():
+			logger.Infow("node message recived", "msg", msg)
+		}
 	}
 }

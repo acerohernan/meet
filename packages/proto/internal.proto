@@ -28,4 +28,6 @@ message NodeMessage {
     }
 }
 
-message CreateRoom {}
+message CreateRoom {
+    string room_id = 1;
+}

@@ -57,29 +57,31 @@ func TestRouterMustDeleteNodeAfterStop(t *testing.T) {
 	// overwrite
 	router.StatsTickerInterval = time.Second * 1
 	conf := &config.Config{Router: &config.RouterConfig{Region: "region-test"}}
+	node := router.CreateLocalNode(conf.Router)
 	store := storage.NewLocalStorage()
 	mon := &routerfakes.FakeMonitor{}
-	r := router.NewRouter(conf, store, mon)
+	mess := &routerfakes.FakeMessenger{}
+	r := router.NewRouter(conf, node, store, mon, mess)
 
 	_, err := r.Start()
 	assert.NoError(t, err)
 
 	nodes, err := store.ListNodes(context.Background(), "region-test")
-	t.Log(nodes)
 	assert.Equal(t, 1, len(nodes))
 
 	time.Sleep(time.Second * 1)
 	err = r.Stop()
 
 	nodes, err = store.ListNodes(context.Background(), "region-test")
-	t.Log(nodes)
 	assert.Equal(t, 0, len(nodes))
 }
 
 func createTestRouter() *router.Router {
 	conf := &config.Config{Router: &config.RouterConfig{}}
+	node := router.CreateLocalNode(conf.Router)
 	store := &storagefakes.FakeInMemoryStorage{}
 	mon := &routerfakes.FakeMonitor{}
+	mess := &routerfakes.FakeMessenger{}
 
-	return router.NewRouter(conf, store, mon)
+	return router.NewRouter(conf, node, store, mon, mess)
 }

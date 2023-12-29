@@ -4,16 +4,21 @@
 package service
 
 import (
+	"github.com/acerohernan/meet/core"
 	"github.com/acerohernan/meet/pkg/config"
+	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
 	"github.com/acerohernan/meet/pkg/service/storage"
 	"github.com/acerohernan/meet/pkg/utils"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 )
 
-func InitializeServer(conf *config.Config) (*Server, error) {
+func InitializeServer(conf *config.Config, localNode *core.Node) (*Server, error) {
 	wire.Build(
+		getRedisClient,
+		getMessenger,
 		getInMemoryStorage,
 		router.NewMonitor,
 		router.NewRouter,
@@ -26,17 +31,27 @@ func InitializeServer(conf *config.Config) (*Server, error) {
 	return &Server{}, nil
 }
 
-func getInMemoryStorage(conf *config.Config) storage.InMemoryStorage {
-	rc := utils.CreateRedisClient(conf.Redis)
+func getRedisClient(conf *config.Config) redis.UniversalClient {
+	rc, err := utils.CreateRedisClient(conf.Redis)
 
+	if err != nil {
+		logger.Infow("error at creating redis client")
+		return nil
+	}
+
+	return rc
+}
+
+func getInMemoryStorage(rc redis.UniversalClient) storage.InMemoryStorage {
 	if rc != nil {
 		return storage.NewRedisStorage(rc)
 	}
-
 	return storage.NewLocalStorage()
 }
 
-/*
-func getRouter(storage storage.InMemoryStorage) *router.Router {
-	return router.NewRouter(storage)
-} */
+func getMessenger(rc redis.UniversalClient, localNode *core.Node) router.Messenger {
+	if rc != nil {
+		return router.NewRedisMessenger(rc, localNode)
+	}
+	return router.NewLocalMessenger()
+}

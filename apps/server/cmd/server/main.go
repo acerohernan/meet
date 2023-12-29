@@ -9,6 +9,7 @@ import (
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service"
+	"github.com/acerohernan/meet/pkg/service/router"
 	"github.com/urfave/cli/v2"
 )
 
@@ -56,7 +57,9 @@ func startServer(ctx *cli.Context) error {
 		return err
 	}
 
-	server, err := service.InitializeServer(conf)
+	localNode := router.CreateLocalNode(conf.Router)
+
+	server, err := service.InitializeServer(conf, localNode)
 
 	if err != nil {
 		return err
