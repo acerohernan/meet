@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package core;
 
+import "rtc.proto";
+
 message Node {
     string id = 1;
     string region = 2;
@@ -25,6 +27,8 @@ message NodeStats {
 message NodeMessage {
     oneof message {
         CreateRoom create_room = 1;
+        SignalRequest signal_request = 2;        
+        SignalResponse signal_response = 3;        
     }
 }
 

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package core;
+
+message SignalRequest {
+    oneof request {
+        StartSession start_session = 1;
+    }
+    string participant_id = 2;
+}
+
+message SignalResponse {
+    oneof response {
+        JoinResponse join_response = 1; 
+    }
+    string participant_id = 2;
+}
+
+message StartSession {}
+
+message JoinResponse {}
