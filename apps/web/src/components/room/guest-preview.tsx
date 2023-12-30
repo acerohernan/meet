@@ -126,8 +126,10 @@ export const GuestPreview = () => {
         left={0}
         right={0}
         width="auto"
-        borderRadius={3}
+        borderRadius="inherit"
         display="flex"
+        flexDirection="column"
+        justifyContent="space-between"
       >
         {micOn ? (
           <Box position="absolute" bottom={0} left={0} margin={2}>
@@ -135,14 +137,30 @@ export const GuestPreview = () => {
           </Box>
         ) : null}
 
+        {/* Top shadow */}
         <Box
-          alignSelf="end"
+          width="100%"
+          height="80px"
+          sx={{
+            backgroundImage:
+              "linear-gradient(to bottom,rgba(0,0,0,0.7) 0,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0) 100%)",
+          }}
+          borderRadius="inherit"
+        ></Box>
+
+        {/* Bottom container */}
+        <Box
           display="flex"
           alignItems="center"
           justifyContent="center"
           width="100%"
           gap={1}
           padding={1}
+          sx={{
+            backgroundImage:
+              "linear-gradient(to top,rgba(0,0,0,0.7) 0,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0) 100%)",
+          }}
+          borderRadius="inherit"
         >
           <Button
             aria-label="on/off microphone"
