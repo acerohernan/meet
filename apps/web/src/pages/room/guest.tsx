@@ -13,17 +13,20 @@ export const GuestPage = () => {
     >
       <Box
         width="100%"
-        maxWidth="1000px"
+        maxWidth="1100px"
         margin="0px auto"
         alignItems="center"
         justifyContent="center"
         display="grid"
-        gap={5}
         sx={{
           gridTemplateColumns: {
             xs: "1fr",
-            sm: "1fr 250px",
-            md: "1fr 300px",
+            md: "1fr 250px",
+            lg: "1fr 400px",
+          },
+          gap: {
+            xs: "32px",
+            md: "0px",
           },
         }}
       >
@@ -34,7 +37,9 @@ export const GuestPage = () => {
           <Typography variant="h4" fontWeight={300} fontSize="1.75rem">
             Ready to join?
           </Typography>
-          <Typography marginTop={3}>No one else here</Typography>
+          <Typography marginTop={3} fontSize="0.9rem">
+            No one else here
+          </Typography>
           <Box marginTop={2}>
             <Button
               variant="contained"
