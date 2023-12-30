@@ -13,7 +13,7 @@ export const GuestPage = () => {
     >
       <Box
         width="100%"
-        maxWidth="1100px"
+        maxWidth="1000px"
         margin="0px auto"
         alignItems="center"
         justifyContent="center"
