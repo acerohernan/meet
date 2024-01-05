@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -5,10 +7,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+
 import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { serverService } from "@/services/server";
 
 export const HomePage = () => {

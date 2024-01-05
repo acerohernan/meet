@@ -15,15 +15,15 @@ export const GuestPage = () => {
     >
       <Box
         width="100%"
-        maxWidth="1000px"
+        maxWidth="1100px"
         margin="0px auto"
         alignItems="center"
         justifyContent="center"
         display="grid"
         sx={{
           gridTemplateColumns: {
-            xs: "1fr",
-            md: "1fr 250px",
+            sm: "1fr",
+            md: "1fr 300px",
             lg: "1fr 400px",
           },
           gap: {
