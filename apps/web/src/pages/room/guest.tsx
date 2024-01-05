@@ -1,6 +1,7 @@
-import { GuestPreview } from "@/components/room/guest-preview";
 import { Box, Button, Typography } from "@mui/material";
 import PresentToAllOutlinedIcon from "@mui/icons-material/PresentToAllOutlined";
+
+import { GuestPreview } from "@/components/room/guest-preview";
 
 export const GuestPage = () => {
   return (
