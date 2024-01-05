@@ -154,7 +154,7 @@ export const GuestPreview = () => {
           alignItems="center"
           justifyContent="center"
           width="100%"
-          gap={2}
+          gap={2.5}
           padding={2}
           sx={{
             backgroundImage:
