@@ -163,7 +163,7 @@ export const GuestPreview = () => {
           borderRadius="inherit"
         >
           <IconButton
-            color={micOn ? "active" : "inactive"}
+            color={micOn ? "on" : "off"}
             onClick={toggleMicrophone}
             sx={{
               padding: "16px",
@@ -176,7 +176,7 @@ export const GuestPreview = () => {
             )}
           </IconButton>
           <IconButton
-            color={cameraOn ? "active" : "inactive"}
+            color={cameraOn ? "on" : "off"}
             onClick={toggleCamera}
             sx={{
               padding: "16px",

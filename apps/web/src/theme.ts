@@ -3,7 +3,8 @@ import { createTheme } from "@mui/material";
 declare module "@mui/material/IconButton" {
   interface IconButtonPropsColorOverrides {
     active: true;
-    inactive: true;
+    on: true;
+    off: true;
   }
 }
 
@@ -12,23 +13,53 @@ export const theme = createTheme({
     MuiIconButton: {
       variants: [
         {
-          props: { color: "active" },
+          props: { color: "on", size: "medium" },
           style: {
             border: "1px solid white",
             backgroundColor: "transparent",
-            padding: "14px",
+            color: "white",
             "&:hover": { backgroundColor: "#9A9A9C" },
+          },
+        },
+        {
+          props: { color: "off", size: "medium" },
+          style: {
+            border: "1px solid #ea4335",
+            backgroundColor: "#ea4335",
+            color: "white",
+            "&:hover": { backgroundColor: "#C93C33" },
+          },
+        },
+        {
+          props: { color: "on", size: "small" },
+          style: {
+            backgroundColor: "#3c4043",
+            border: "none",
+            padding: "10px",
+            borderRadius: "100%",
             color: "white",
           },
         },
         {
-          props: { color: "inactive" },
+          props: { color: "off", size: "small" },
           style: {
-            border: "1px solid #ea4335",
-            padding: "14px",
+            border: "none",
+            padding: "10px",
+            borderRadius: "100%",
             backgroundColor: "#ea4335",
             color: "white",
             "&:hover": { backgroundColor: "#C93C33" },
+          },
+        },
+        {
+          props: { color: "active" },
+          style: {
+            border: "none",
+            padding: "10px",
+            borderRadius: "100%",
+            backgroundColor: "#8AB4F8",
+            color: "black",
+            "&:hover": { backgroundColor: "#abc9fc" },
           },
         },
       ],

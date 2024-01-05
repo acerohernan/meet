@@ -32,14 +32,16 @@ export const MeetingPage = () => {
       <Box sx={{ flex: 1 }}></Box>
       <Box width="100%" sx={{ display: "flex", gap: 2 }}>
         <IconButton
-          color={micOn ? "active" : "inactive"}
+          color={micOn ? "on" : "off"}
+          size="small"
           onClick={toggleMicrophone}
         >
           {micOn ? <MicIcon /> : <MicOffIcon />}
         </IconButton>
         <IconButton
-          color={cameraOn ? "active" : "inactive"}
+          color={cameraOn ? "on" : "off"}
           onClick={toggleCamera}
+          size="small"
         >
           {cameraOn ? <VideocamOutlinedIcon /> : <VideocamOffOutlinedIcon />}
         </IconButton>
