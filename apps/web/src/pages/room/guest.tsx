@@ -1,6 +1,7 @@
 import { GuestPreview } from "@/components/room/guest-preview";
 import { Box, Button, Typography } from "@mui/material";
 import PresentToAllOutlinedIcon from "@mui/icons-material/PresentToAllOutlined";
+
 export const GuestPage = () => {
   return (
     <Box
@@ -53,14 +54,12 @@ export const GuestPage = () => {
               Join now
             </Button>
             <Button
-              variant="contained"
+              variant="outlined"
               sx={{
                 borderRadius: "25px",
-                backgroundColor: "white",
                 padding: "10px 25px",
                 fontWeight: 300,
                 fontSize: "0.9rem",
-                color: "#1a73e8",
               }}
               startIcon={<PresentToAllOutlinedIcon />}
             >
