@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import VideocamOffOutlinedIcon from "@mui/icons-material/VideocamOffOutlined";
 import MicOffOutlinedIcon from "@mui/icons-material/MicOffOutlined";
 import MicNoneOutlinedIcon from "@mui/icons-material/MicNoneOutlined";
@@ -154,60 +154,40 @@ export const GuestPreview = () => {
           alignItems="center"
           justifyContent="center"
           width="100%"
-          gap={1}
-          padding={1}
+          gap={2}
+          padding={2}
           sx={{
             backgroundImage:
               "linear-gradient(to top,rgba(0,0,0,0.7) 0,rgba(0,0,0,0.3) 50%,rgba(0,0,0,0) 100%)",
           }}
           borderRadius="inherit"
         >
-          <Button
-            aria-label="on/off microphone"
-            variant="contained"
-            size="small"
-            sx={{
-              borderRadius: "100%",
-              padding: "20px",
-              borderColor: micOn ? "white" : "#ea4335",
-              borderWidth: "1px",
-              borderStyle: "solid",
-              backgroundColor: micOn ? "transparent" : "#ea4335",
-              "&:hover": { backgroundColor: micOn ? "#9A9A9C" : "#C93C33" },
-              transform: "scale(0.8)",
-            }}
+          <IconButton
+            color={micOn ? "active" : "inactive"}
             onClick={toggleMicrophone}
+            sx={{
+              padding: "16px",
+            }}
           >
             {micOn ? (
-              <MicNoneOutlinedIcon sx={{ color: "white", fontSize: "2rem" }} />
+              <MicNoneOutlinedIcon sx={{ fontSize: "1.6rem" }} />
             ) : (
-              <MicOffOutlinedIcon sx={{ color: "white", fontSize: "2rem" }} />
+              <MicOffOutlinedIcon sx={{ fontSize: "1.6rem" }} />
             )}
-          </Button>
-          <Button
-            aria-label="on/off camera"
-            variant="contained"
-            size="small"
-            sx={{
-              borderRadius: "100%",
-              padding: "20px",
-              borderColor: cameraOn ? "white" : "#ea4335",
-              borderWidth: "1px",
-              borderStyle: "solid",
-              backgroundColor: cameraOn ? "transparent" : "#ea4335",
-              "&:hover": { backgroundColor: cameraOn ? "#9A9A9C" : "#C93C33" },
-              transform: "scale(0.8)",
-            }}
+          </IconButton>
+          <IconButton
+            color={cameraOn ? "active" : "inactive"}
             onClick={toggleCamera}
+            sx={{
+              padding: "16px",
+            }}
           >
             {cameraOn ? (
-              <VideocamOutlinedIcon sx={{ color: "white", fontSize: "2rem" }} />
+              <VideocamOutlinedIcon sx={{ fontSize: "1.6rem" }} />
             ) : (
-              <VideocamOffOutlinedIcon
-                sx={{ color: "white", fontSize: "2rem" }}
-              />
+              <VideocamOffOutlinedIcon sx={{ fontSize: "1.6rem" }} />
             )}
-          </Button>
+          </IconButton>
         </Box>
       </Box>
     </Box>
