@@ -38,6 +38,7 @@ export const theme = createTheme({
             padding: "10px",
             borderRadius: "100%",
             color: "white",
+            "&:hover": { backgroundColor: "#434649" },
           },
         },
         {
@@ -63,6 +64,37 @@ export const theme = createTheme({
           },
         },
       ],
+    },
+    MuiCssBaseline: {
+      styleOverrides: () => ({
+        body: {
+          scrollbarColor: "#6b6b6b #202124",
+          "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+            backgroundColor: "#202124",
+          },
+          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+            borderRadius: 8,
+            backgroundColor: "#6b6b6b",
+            minHeight: 24,
+            border: "4px solid #202124",
+          },
+          "&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus":
+            {
+              backgroundColor: "#959595",
+            },
+          "&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active":
+            {
+              backgroundColor: "#959595",
+            },
+          "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
+            {
+              backgroundColor: "#959595",
+            },
+          "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
+            backgroundColor: "#202124",
+          },
+        },
+      }),
     },
   },
   typography: {
