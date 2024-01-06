@@ -8,10 +8,17 @@ export const ParticipantCard = () => {
       sx={{
         backgroundColor: "#3C4043",
         borderRadius: 2,
-        height: "350px",
         display: "flex",
         flexDirection: "column",
         padding: 2,
+        /* wrap */
+        flex: 1,
+        flexBasis: "350px",
+        aspectRatio: "12 / 9",
+        maxWidth: "100%",
+        maxHeight: "100%",
+        margin: "auto 0px",
+        height: "auto",
       }}
     >
       <Box
@@ -42,8 +49,9 @@ export const ParticipantCard = () => {
         <Avatar
           sx={{
             width: "100px",
-            height: "100px",
-            fontSize: "2.4rem",
+            height: "auto",
+            aspectRatio: "1 / 1",
+            fontSize: "3rem",
           }}
           variant="circular"
         >
