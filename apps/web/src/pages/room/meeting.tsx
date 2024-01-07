@@ -1,17 +1,25 @@
-import { Box, IconButton, Tooltip, Typography } from "@mui/material";
-import MicIcon from "@mui/icons-material/Mic";
-import MicOffIcon from "@mui/icons-material/MicOff";
-import VideocamOffOutlinedIcon from "@mui/icons-material/VideocamOffOutlined";
-import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
-import PresentToAllOutlinedIcon from "@mui/icons-material/PresentToAllOutlined";
-import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { useState } from "react";
+
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+
+import MicIcon from "@mui/icons-material/Mic";
+import InfoIcon from "@mui/icons-material/Info";
+import MicOffIcon from "@mui/icons-material/MicOff";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import VideocamOffOutlinedIcon from "@mui/icons-material/VideocamOffOutlined";
+import PresentToAllOutlinedIcon from "@mui/icons-material/PresentToAllOutlined";
+
+import { ParticipantCard } from "@/components/room/participant-card";
+
 export const MeetingPage = () => {
   const [micOn, setMicOn] = useState(false);
   const [cameraOn, setCameraOn] = useState(false);
   const [screenShareOn, setScreenShareOn] = useState(false);
   const [participantsOpened, setParticipantsOpened] = useState(false);
+  const [infoOpened, setInfoOpened] = useState(false);
 
   function toggleMicrophone() {
     setMicOn((prev) => !prev);
@@ -29,18 +37,44 @@ export const MeetingPage = () => {
     setParticipantsOpened((prev) => !prev);
   }
 
+  function toggleInfoModal() {
+    setInfoOpened((prev) => !prev);
+  }
+
   return (
     <Box
       width="100%"
       height="100vh"
+      boxSizing="border-box"
       sx={{
         display: "flex",
         flexDirection: "column",
+        padding: 2,
         backgroundColor: "#202124",
-        padding: 4,
       }}
     >
-      <Box sx={{ flex: 1 }}></Box>
+      <Box
+        sx={{
+          flex: 1,
+          marginBottom: 2,
+          overflow: "auto",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 2,
+            height: "100%",
+          }}
+        >
+          <ParticipantCard />
+          <ParticipantCard />
+          <ParticipantCard />
+          <ParticipantCard />
+        </Box>
+      </Box>
 
       <Box
         width="100%"
@@ -121,9 +155,9 @@ export const MeetingPage = () => {
               )}
             </IconButton>
           </Tooltip>
-          <Tooltip title={screenShareOn ? "Present now" : "Stop presenting"}>
+          <Tooltip title={screenShareOn ? "Stop presenting" : "Present now"}>
             <IconButton
-              color={screenShareOn ? "on" : "active"}
+              color={screenShareOn ? "active" : "on"}
               onClick={toggleScreenShare}
               size="small"
             >
@@ -141,6 +175,15 @@ export const MeetingPage = () => {
             justifyContent: "end",
           }}
         >
+          <IconButton
+            onClick={toggleInfoModal}
+            sx={{
+              color: infoOpened ? "#8ab4f8" : "white",
+              padding: "14px",
+            }}
+          >
+            {infoOpened ? <InfoIcon /> : <InfoOutlinedIcon />}
+          </IconButton>
           <IconButton
             onClick={toggleParticipantsModal}
             sx={{
