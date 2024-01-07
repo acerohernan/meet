@@ -10,6 +10,6 @@
 
 ![Home page](docs/home-page.png)
 
-![Wait page](docs/wait-page.png)ç
+![Wait page](docs/wait-page.png)
 
 ![Meeting page](docs/meeting-page.png)
