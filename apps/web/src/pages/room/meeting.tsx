@@ -1,10 +1,11 @@
 import { useState } from "react";
 
-import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, Button, IconButton, Tooltip, Typography } from "@mui/material";
 
 import MicIcon from "@mui/icons-material/Mic";
 import InfoIcon from "@mui/icons-material/Info";
 import MicOffIcon from "@mui/icons-material/MicOff";
+import CallEndIcon from "@mui/icons-material/CallEnd";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
@@ -164,6 +165,13 @@ export const MeetingPage = () => {
               <PresentToAllOutlinedIcon />
             </IconButton>
           </Tooltip>
+          <Button
+            color="error"
+            variant="contained"
+            sx={{ borderRadius: "22px" }}
+          >
+            <CallEndIcon />
+          </Button>
         </Box>
         <Box
           sx={{
