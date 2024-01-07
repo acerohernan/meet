@@ -2,7 +2,7 @@
 
 ![Wait page](docs/wait-page.png)
 
-## Diagram
+## Diagram
 
 ![Diagram](docs/diagram.png)
 
