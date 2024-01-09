@@ -22,7 +22,7 @@ func InitializeServer(conf *config.Config, localNode *core.Node) (*Server, error
 		getMessenger,
 		getObjectStore,
 		router.NewMonitor,
-		rtc.NewRoomManager,
+		rtc.NewRTCManager,
 		router.NewRouter,
 		auth.NewAuthMiddleware,
 		auth.NewAuthService,

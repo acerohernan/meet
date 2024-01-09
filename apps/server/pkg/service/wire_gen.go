@@ -30,10 +30,10 @@ func InitializeServer(conf *config.Config, localNode *core.Node) (*Server, error
 		return nil, err
 	}
 	messenger := getMessenger(universalClient, localNode)
-	roomManager := rtc.NewRoomManager(objectStore)
-	routerRouter := router.NewRouter(conf, localNode, objectStore, monitor, messenger, roomManager)
+	rtcManager := rtc.NewRTCManager(objectStore)
+	routerRouter := router.NewRouter(conf, localNode, objectStore, monitor, messenger, rtcManager)
 	roomService := NewRoomService(routerRouter, objectStore, authService)
-	server := NewServer(conf, authMiddleware, roomService, routerRouter)
+	server := NewServer(conf, authMiddleware, roomService, routerRouter, rtcManager)
 	return server, nil
 }
 

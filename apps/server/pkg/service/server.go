@@ -10,6 +10,7 @@ import (
 	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
+	"github.com/acerohernan/meet/pkg/service/rtc"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 	"golang.org/x/sync/errgroup"
@@ -22,16 +23,20 @@ type Server struct {
 	doneChan   chan struct{}
 }
 
-func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc *RoomService, router *router.Router) *Server {
+func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc *RoomService, router *router.Router, rtcManager rtc.RTCManager) *Server {
 	mux := http.NewServeMux()
-
-	roomServer := twirpv1.NewRoomServiceServer(roomSvc)
-	mux.Handle(roomServer.PathPrefix(), roomServer)
 
 	// health check
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("OK"))
 	})
+
+	// rtc endpoint
+	mux.HandleFunc("/rtc", rtcManager.ServeHTTP)
+
+	// twirp services
+	roomServer := twirpv1.NewRoomServiceServer(roomSvc)
+	mux.Handle(roomServer.PathPrefix(), roomServer)
 
 	middlewares := []negroni.Handler{
 		negroni.NewRecovery(),
@@ -49,12 +54,11 @@ func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc
 		authMiddleware,
 	}
 
+	// apply middlewares
 	handler := negroni.New()
-
 	for _, m := range middlewares {
 		handler.Use(m)
 	}
-
 	handler.UseHandler(mux)
 
 	return &Server{
