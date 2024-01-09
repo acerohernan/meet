@@ -1,7 +1,10 @@
+import { Suspense } from "react";
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material";
+
+import { Loader } from "./components/loader";
 
 import { store } from "./store/store";
 
@@ -10,13 +13,15 @@ import { router } from "./router";
 
 function App() {
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <Toaster />
-        <CssBaseline />
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </Provider>
+    <Suspense fallback={<Loader />}>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <Toaster />
+          <CssBaseline />
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </Provider>
+    </Suspense>
   );
 }
 
