@@ -1,11 +1,12 @@
-import { store } from "./store/store";
+import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 
-import { Provider } from "react-redux";
-import { router } from "./router";
+import { store } from "./store/store";
+
 import { theme } from "./theme";
+import { router } from "./router";
 
 function App() {
   return (
