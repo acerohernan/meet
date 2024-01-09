@@ -69,5 +69,8 @@ sketch
 # tmp
 tmp/
 
-# config
+# server config
 config.yaml
+
+# environment
+.env
