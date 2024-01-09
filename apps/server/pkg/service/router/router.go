@@ -28,10 +28,10 @@ type Router struct {
 	running   atomic.Bool
 	monitor   Monitor
 	messenger Messenger
-	manager   *rtc.RoomManager
+	manager   rtc.RTCManager
 }
 
-func NewRouter(conf *config.Config, localNode *core.Node, store storage.ObjectStore, monitor Monitor, messenger Messenger, manager *rtc.RoomManager) *Router {
+func NewRouter(conf *config.Config, localNode *core.Node, store storage.ObjectStore, monitor Monitor, messenger Messenger, manager rtc.RTCManager) *Router {
 	return &Router{
 		mu:        sync.RWMutex{},
 		ctx:       context.Background(),
