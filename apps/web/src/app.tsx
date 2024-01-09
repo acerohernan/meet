@@ -1,4 +1,5 @@
 import { store } from "./store/store";
+import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 
@@ -10,6 +11,7 @@ function App() {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
+        <Toaster />
         <CssBaseline />
         <RouterProvider router={router} />
       </ThemeProvider>
