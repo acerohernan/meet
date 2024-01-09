@@ -18,6 +18,7 @@ var (
 		// room service open endpoints
 		"/twirp/twirp.v1.RoomService/CreateRoom": true,
 	}
+	GrantsCTXKey = "grants"
 )
 
 type AuthMiddleware struct {
@@ -53,7 +54,7 @@ func (m *AuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next 
 	}
 
 	if authToken == "" {
-		handleError(w, "acess token not found")
+		handleError(w, "access token not found")
 		return
 	}
 
@@ -66,7 +67,7 @@ func (m *AuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next 
 
 	// set grants in context
 	ctx := r.Context()
-	r = r.WithContext(context.WithValue(ctx, "grants", at.grants))
+	r = r.WithContext(context.WithValue(ctx, GrantsCTXKey, at.grants))
 
 	next(w, r)
 }
@@ -74,4 +75,19 @@ func (m *AuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next 
 func handleError(w http.ResponseWriter, msg string) {
 	w.WriteHeader(http.StatusUnauthorized)
 	w.Write([]byte(msg))
+}
+
+func GetGrantsFromCTX(ctx context.Context) (*Grants, error) {
+	ctxGrants := ctx.Value(GrantsCTXKey)
+	if ctxGrants == nil {
+		return nil, GrantsNotFoundErr
+	}
+
+	grants, ok := ctxGrants.(*Grants)
+
+	if !ok {
+		return nil, InvalidGrantsErr
+	}
+
+	return grants, nil
 }

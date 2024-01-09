@@ -55,7 +55,7 @@ func (s *AuthService) NewAccessTokenFromGrants(grants *Grants) (*AccessToken, er
 func (s *AuthService) NewAccessTokenFromRawJWT(rawJWT string) (*AccessToken, error) {
 	token, err := jwt.ParseWithClaims(rawJWT, &JWTClaims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(s.conf.Secret), nil
-	})
+	}, jwt.WithExpirationRequired())
 
 	if err != nil {
 		return nil, err
