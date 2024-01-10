@@ -1,11 +1,16 @@
-import { RoomContextProvider } from "@/context/room";
+/* import { accessTokenKey } from "@/constants/auth";
+import { useMemo } from "react"; */
+import { useState } from "react";
 
-import { MeetingPage } from "./meeting";
+import { WaitRoom } from "./wait-room";
+import { Meeting } from "./meeting";
 
-export const RoomPage = () => {
-  return (
-    <RoomContextProvider>
-      <MeetingPage />
-    </RoomContextProvider>
-  );
+const RoomPage = () => {
+  const [waitRoom] = useState(true);
+
+  if (waitRoom) return <WaitRoom />;
+
+  return <Meeting />;
 };
+
+export default RoomPage;

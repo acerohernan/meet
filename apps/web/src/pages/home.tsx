@@ -7,14 +7,18 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-
-import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
+import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 
-import { serverService } from "@/services/server";
+import { rtcService } from "@/services/rtc";
 
-export const HomePage = () => {
+import { accessTokenKey } from "@/constants/auth";
+
+import { useToast } from "@/hooks/useToast";
+
+const HomePage = () => {
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   const navigate = useNavigate();
 
@@ -22,11 +26,14 @@ export const HomePage = () => {
     setLoading(true);
 
     try {
-      const room = await serverService.createRoom();
+      const room = await rtcService.createRoom();
+      sessionStorage.setItem(accessTokenKey, room.token);
       setLoading(false);
       navigate(`/${room.id}`);
     } catch (err) {
-      console.error("error at create meeting", err);
+      toast.error(
+        "Something went wrong at the server. Please try again later."
+      );
       setLoading(false);
     }
   }
@@ -50,10 +57,10 @@ export const HomePage = () => {
         maxWidth={700}
         margin="0px auto"
       >
-        <Typography variant="h3" fontWeight={300} marginBottom={3}>
+        <Typography variant="h3" marginBottom={3}>
           Premium video meetings. Now free for everyone
         </Typography>
-        <Typography variant="h6" fontWeight={200}>
+        <Typography fontWeight={300} fontSize="1.125rem">
           We re-engineered the service we built for secure bussiness meetings,
           to make it free and avaliable for all.
         </Typography>
@@ -80,8 +87,8 @@ export const HomePage = () => {
           <Button
             variant="contained"
             size="large"
-            css={{ fontWeight: 300, fontSize: "1.1rem", flexShrink: 0 }}
-            startIcon={<VideocamOutlinedIcon />}
+            css={{ fontSize: "1rem", flexShrink: 0, fontWeight: 600 }}
+            startIcon={<VideoCallOutlinedIcon />}
             onClick={createMeeting}
             disabled={loading}
           >
@@ -101,11 +108,7 @@ export const HomePage = () => {
                 ),
               }}
             />
-            <Button
-              size="large"
-              css={{ fontWeight: 300, fontSize: "1rem" }}
-              disabled
-            >
+            <Button size="large" css={{ fontSize: "1rem" }} disabled>
               Join
             </Button>
           </Box>
@@ -114,3 +117,5 @@ export const HomePage = () => {
     </Box>
   );
 };
+
+export default HomePage;
