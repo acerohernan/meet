@@ -95,6 +95,18 @@ func (s *RoomService) CreateRoom(ctx context.Context, req *twirpv1.CreateRoomReq
 	return &twirpv1.CreateRoomResponse{AccessToken: at.ToJWT(), RoomId: req.RoomId}, nil
 }
 
+func (s *RoomService) VerifyRoom(ctx context.Context, req *twirpv1.VerifyRoomRequest) (*twirpv1.VerifyRoomResponse, error) {
+	var exists bool
+
+	if _, err := s.store.LoadRoom(ctx, req.RoomId); err == nil {
+		exists = true
+	}
+
+	return &twirpv1.VerifyRoomResponse{
+		Exists: exists,
+	}, nil
+}
+
 func confirmExecution(f func() error) error {
 	counter := atomic.Int32{}
 	expired := time.After(APITimeoutDuration)
