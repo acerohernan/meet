@@ -17,6 +17,7 @@ var (
 		"/": true,
 		// room service open endpoints
 		"/twirp/twirp.v1.RoomService/CreateRoom": true,
+		"/twirp/twirp.v1.RoomService/VerifyRoom": true,
 	}
 	GrantsCTXKey = "grants"
 )
