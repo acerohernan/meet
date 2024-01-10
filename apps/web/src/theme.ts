@@ -98,6 +98,7 @@ export const theme = createTheme({
     },
   },
   typography: {
+    fontFamily: "'Open Sans', sans-serif",
     button: {
       textTransform: "none",
     },
