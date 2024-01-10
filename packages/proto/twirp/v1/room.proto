@@ -4,6 +4,7 @@ package twirp.v1;
 
 service RoomService {
     rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse) {}
+    rpc VerifyRoom(VerifyRoomRequest) returns (VerifyRoomResponse) {}
 }
 
 message CreateRoomRequest {
@@ -14,4 +15,12 @@ message CreateRoomRequest {
 message CreateRoomResponse {
     string access_token = 1;
     string room_id = 2;
+}
+
+message VerifyRoomRequest {
+    string room_id = 1;
+}
+
+message VerifyRoomResponse {
+    bool exists = 1;
 }
