@@ -12,7 +12,11 @@ enum CameraState {
   ON,
 }
 
-export const GuestPreview = () => {
+interface Props {
+  isLoading: boolean;
+}
+
+export const GuestPreview: React.FC<Props> = ({ isLoading }) => {
   const [micOn, setMicOn] = useState(false);
   const [cameraState, setCameraState] = useState<CameraState>(CameraState.OFF);
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
@@ -79,6 +83,24 @@ export const GuestPreview = () => {
     () => cameraState !== CameraState.OFF,
     [cameraState]
   );
+
+  // if it's oading show and empty box
+  if (isLoading)
+    return (
+      <Box
+        width="100%"
+        height="100%"
+        borderRadius={3}
+        position="relative"
+        sx={{
+          background: "#202124",
+          display: "grid",
+          placeItems: "center",
+          aspectRatio: "4/2.5",
+          minWidth: "300px",
+        }}
+      />
+    );
 
   return (
     <Box
