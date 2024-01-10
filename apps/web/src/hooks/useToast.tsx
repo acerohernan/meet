@@ -2,10 +2,9 @@ import { toast } from "react-hot-toast";
 
 export const useToast = () => {
   return {
-    toast: {
-      success: (msg: string) => toast.success(msg),
-      error: (msg: string) => toast.error(msg),
-      warning: (msg: string) => toast(msg, { icon: "⚠️" }),
-    },
+    success: (msg: string) => toast.success(msg, { position: "bottom-right" }),
+    error: (msg: string) => toast.error(msg, { position: "bottom-right" }),
+    warning: (msg: string) =>
+      toast(msg, { icon: "⚠️", position: "bottom-right" }),
   };
 };
