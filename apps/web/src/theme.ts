@@ -10,6 +10,13 @@ declare module "@mui/material/IconButton" {
 
 export const theme = createTheme({
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontWeight: 600,
+        },
+      },
+    },
     MuiIconButton: {
       variants: [
         {
