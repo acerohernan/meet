@@ -1,11 +1,12 @@
+import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
-import PresentToAllOutlinedIcon from "@mui/icons-material/PresentToAllOutlined";
+import { Box, Button, Typography } from "@mui/material";
 
 import { GuestPreview } from "@/components/room/guest-preview";
 
 import { useRoomVerification } from "@/hooks/useRoomVerification";
-import { useMemo } from "react";
+
+import { WaitRoomControls } from "./controls";
 
 export const WaitRoom = () => {
   const { roomId } = useParams();
@@ -70,53 +71,7 @@ export const WaitRoom = () => {
         <Box maxWidth="800px">
           <GuestPreview isLoading={isLoading} />
         </Box>
-        {isLoading ? (
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <Typography variant="h4" fontWeight={400} fontSize="1.8rem">
-              Getting ready...
-            </Typography>
-            <Typography marginTop={3} fontSize="0.9rem">
-              You'll be able to join in just a moment
-            </Typography>
-            <Box marginTop={2}>
-              <CircularProgress />
-            </Box>
-          </Box>
-        ) : (
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <Typography variant="h4" fontWeight={400} fontSize="1.8rem">
-              Ready to join?
-            </Typography>
-            <Typography marginTop={3} fontSize="0.9rem">
-              No one else here
-            </Typography>
-            <Box marginTop={2} display="flex" alignItems="center" gap={1}>
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: "25px",
-                  padding: "10px 25px",
-                  fontWeight: 400,
-                  fontSize: "0.9rem",
-                }}
-              >
-                Join now
-              </Button>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderRadius: "25px",
-                  padding: "10px 25px",
-                  fontWeight: 400,
-                  fontSize: "0.9rem",
-                }}
-                startIcon={<PresentToAllOutlinedIcon />}
-              >
-                Present
-              </Button>
-            </Box>
-          </Box>
-        )}
+        <WaitRoomControls isLoading={isLoading} />
       </Box>
     </Box>
   );
