@@ -5,7 +5,7 @@ export class Room {
   private roomInfo?: RoomModel;
   private rpc: RPC;
 
-  constructor(public id: string, private url: string, public token: string) {
+  constructor(private url: string, public token: string) {
     this.rpc = new RPC(this.url, this.token);
   }
 
