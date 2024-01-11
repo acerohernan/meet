@@ -15,7 +15,7 @@ import PresentToAllOutlinedIcon from "@mui/icons-material/PresentToAllOutlined";
 
 import { ParticipantCard } from "@/components/room/participant-card";
 
-export const MeetingPage = () => {
+export const Meeting = () => {
   const [micOn, setMicOn] = useState(false);
   const [cameraOn, setCameraOn] = useState(false);
   const [screenShareOn, setScreenShareOn] = useState(false);
@@ -70,8 +70,6 @@ export const MeetingPage = () => {
             height: "100%",
           }}
         >
-          <ParticipantCard />
-          <ParticipantCard />
           <ParticipantCard />
           <ParticipantCard />
         </Box>
