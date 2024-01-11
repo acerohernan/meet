@@ -96,7 +96,7 @@ func (m *rtcManager) signalWorker(conn *websocket.Conn, p *Participant) {
 		messageType, payload, err := conn.ReadMessage()
 
 		if err != nil {
-			logger.Errow("error at reading ws message", err)
+			logger.Errorw("error at reading ws message", err)
 		}
 
 		msg := &core.SignalRequest{}
@@ -108,7 +108,7 @@ func (m *rtcManager) signalWorker(conn *websocket.Conn, p *Participant) {
 				logger.Infow("signal request received", "msg", msg)
 			}
 		default:
-			logger.Errow("ws message not supported", errors.New("ws msg type not supported"), "type", messageType)
+			logger.Errorw("ws message not supported", errors.New("ws msg type not supported"), "type", messageType)
 		}
 
 	}

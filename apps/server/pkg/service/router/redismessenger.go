@@ -58,7 +58,7 @@ func (m *RedisMessenger) messageProxy() {
 			var nodeMsg core.NodeMessage
 			err := proto.Unmarshal([]byte(msg.Payload), &nodeMsg)
 			if err != nil {
-				logger.Errow("error at parsing redis message", err)
+				logger.Errorw("error at parsing redis message", err)
 				continue
 			}
 			// write to msgChan

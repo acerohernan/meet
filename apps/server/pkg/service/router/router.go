@@ -157,7 +157,7 @@ func (r *Router) statsWorker() {
 			err := r.store.StoreNode(r.ctx, r.localNode.Region, r.localNode)
 
 			if err != nil {
-				logger.Errow("error at storing new stats for local node", err)
+				logger.Errorw("error at storing new stats for local node", err)
 			}
 			r.mu.RUnlock()
 		}
@@ -171,7 +171,7 @@ func (r *Router) messageWorker() {
 			return
 		case msg := <-r.messenger.ReadChan():
 			if err := r.handleNodeMessage(msg); err != nil {
-				logger.Errow("an error ocurred at handling node message", err)
+				logger.Errorw("an error ocurred at handling node message", err)
 			}
 		}
 	}

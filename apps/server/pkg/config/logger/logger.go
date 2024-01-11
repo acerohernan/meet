@@ -58,7 +58,7 @@ func Warnw(msg string, keysAndValues ...interface{}) {
 	defaultLogger.Warnw(msg, keysAndValues...)
 }
 
-func Errow(msg string, err error, keysAndValues ...interface{}) {
+func Errorw(msg string, err error, keysAndValues ...interface{}) {
 	if defaultLogger == nil {
 		return
 	}

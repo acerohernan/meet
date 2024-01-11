@@ -87,7 +87,7 @@ func (s *Server) Start() error {
 	// listen for errors in http server
 	go func() {
 		if err := httpGroup.Wait(); err != http.ErrServerClosed {
-			logger.Errow("could not start the server: ", err)
+			logger.Errorw("could not start the server: ", err)
 			s.Stop()
 		}
 	}()
@@ -110,14 +110,14 @@ func (s *Server) Start() error {
 
 func (s *Server) Stop() error {
 	if err := s.httpServer.Close(); err != nil {
-		logger.Errow("error at closing http server", err)
+		logger.Errorw("error at closing http server", err)
 	}
 
 	// start router
 	err := s.router.Stop()
 
 	if err != nil {
-		logger.Errow("error at stopping router", err)
+		logger.Errorw("error at stopping router", err)
 	}
 
 	close(s.doneChan)
