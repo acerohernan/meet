@@ -12,9 +12,8 @@ import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 
 import { rtcService } from "@/services/rtc";
 
-import { accessTokenKey } from "@/constants/auth";
-
 import { useToast } from "@/hooks/useToast";
+import { saveRoomToken } from "@/hooks/useAccessToken";
 
 const HomePage = () => {
   const [loading, setLoading] = useState(false);
@@ -26,10 +25,10 @@ const HomePage = () => {
     setLoading(true);
 
     try {
-      const room = await rtcService.createRoom();
-      sessionStorage.setItem(accessTokenKey, room.token);
+      const res = await rtcService.createRoom();
+      saveRoomToken({ roomId: res.roomId, token: res.accessToken });
       setLoading(false);
-      navigate(`/${room.id}`);
+      navigate(`/${res.roomId}`);
     } catch (err) {
       toast.error(
         "Something went wrong at the server. Please try again later."
