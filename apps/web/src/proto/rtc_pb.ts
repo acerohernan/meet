@@ -11,20 +11,20 @@ import { Message, proto3 } from "@bufbuild/protobuf";
  */
 export class SignalRequest extends Message<SignalRequest> {
   /**
+   * @generated from field: string participant_id = 1;
+   */
+  participantId = "";
+
+  /**
    * @generated from oneof core.SignalRequest.request
    */
   request: {
     /**
-     * @generated from field: core.StartSession start_session = 1;
+     * @generated from field: core.StartSession start_session = 2;
      */
     value: StartSession;
     case: "startSession";
   } | { case: undefined; value?: undefined } = { case: undefined };
-
-  /**
-   * @generated from field: string participant_id = 2;
-   */
-  participantId = "";
 
   constructor(data?: PartialMessage<SignalRequest>) {
     super();
@@ -34,8 +34,8 @@ export class SignalRequest extends Message<SignalRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "core.SignalRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "start_session", kind: "message", T: StartSession, oneof: "request" },
-    { no: 2, name: "participant_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "participant_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "start_session", kind: "message", T: StartSession, oneof: "request" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SignalRequest {
@@ -60,20 +60,20 @@ export class SignalRequest extends Message<SignalRequest> {
  */
 export class SignalResponse extends Message<SignalResponse> {
   /**
+   * @generated from field: string participant_id = 1;
+   */
+  participantId = "";
+
+  /**
    * @generated from oneof core.SignalResponse.response
    */
   response: {
     /**
-     * @generated from field: core.JoinResponse join_response = 1;
+     * @generated from field: core.JoinResponse join_response = 2;
      */
     value: JoinResponse;
     case: "joinResponse";
   } | { case: undefined; value?: undefined } = { case: undefined };
-
-  /**
-   * @generated from field: string participant_id = 2;
-   */
-  participantId = "";
 
   constructor(data?: PartialMessage<SignalResponse>) {
     super();
@@ -83,8 +83,8 @@ export class SignalResponse extends Message<SignalResponse> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "core.SignalResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "join_response", kind: "message", T: JoinResponse, oneof: "response" },
-    { no: 2, name: "participant_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "participant_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "join_response", kind: "message", T: JoinResponse, oneof: "response" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SignalResponse {
