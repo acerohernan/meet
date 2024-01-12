@@ -10,7 +10,6 @@ import (
 	"github.com/acerohernan/meet/core"
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/config/logger"
-	"github.com/acerohernan/meet/pkg/service/rtc"
 	"github.com/acerohernan/meet/pkg/service/storage"
 )
 
@@ -28,10 +27,11 @@ type Router struct {
 	running   atomic.Bool
 	monitor   Monitor
 	messenger Messenger
-	manager   rtc.RTCManager
+
+	onNodeMessage func(msg *core.NodeMessage) error
 }
 
-func NewRouter(conf *config.Config, localNode *core.Node, store storage.ObjectStore, monitor Monitor, messenger Messenger, manager rtc.RTCManager) *Router {
+func NewRouter(conf *config.Config, localNode *core.Node, store storage.ObjectStore, monitor Monitor, messenger Messenger) *Router {
 	return &Router{
 		mu:        sync.RWMutex{},
 		ctx:       context.Background(),
@@ -42,8 +42,13 @@ func NewRouter(conf *config.Config, localNode *core.Node, store storage.ObjectSt
 		monitor:   monitor,
 		messenger: messenger,
 		localNode: localNode,
-		manager:   manager,
 	}
+}
+
+func (r *Router) OnNodeMessage(f func(msg *core.NodeMessage) error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.onNodeMessage = f
 }
 
 func (r *Router) Start() (*core.Node, error) {
@@ -170,7 +175,11 @@ func (r *Router) messageWorker() {
 		case <-r.doneChan:
 			return
 		case msg := <-r.messenger.ReadChan():
-			if err := r.handleNodeMessage(msg); err != nil {
+			if r.onNodeMessage == nil {
+				continue
+			}
+
+			if err := r.onNodeMessage(msg); err != nil {
 				logger.Errorw("an error ocurred at handling node message", err)
 			}
 		}
