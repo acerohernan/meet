@@ -8,7 +8,6 @@ import (
 
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/rtc"
-	"github.com/gorilla/websocket"
 )
 
 type FakeRTCManager struct {
@@ -30,11 +29,10 @@ type FakeRTCManager struct {
 		arg1 http.ResponseWriter
 		arg2 *http.Request
 	}
-	StartParticipantSignalStub        func(*websocket.Conn, *auth.Grants) error
+	StartParticipantSignalStub        func(*auth.Grants) error
 	startParticipantSignalMutex       sync.RWMutex
 	startParticipantSignalArgsForCall []struct {
-		arg1 *websocket.Conn
-		arg2 *auth.Grants
+		arg1 *auth.Grants
 	}
 	startParticipantSignalReturns struct {
 		result1 error
@@ -141,19 +139,18 @@ func (fake *FakeRTCManager) ServeHTTPArgsForCall(i int) (http.ResponseWriter, *h
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeRTCManager) StartParticipantSignal(arg1 *websocket.Conn, arg2 *auth.Grants) error {
+func (fake *FakeRTCManager) StartParticipantSignal(arg1 *auth.Grants) error {
 	fake.startParticipantSignalMutex.Lock()
 	ret, specificReturn := fake.startParticipantSignalReturnsOnCall[len(fake.startParticipantSignalArgsForCall)]
 	fake.startParticipantSignalArgsForCall = append(fake.startParticipantSignalArgsForCall, struct {
-		arg1 *websocket.Conn
-		arg2 *auth.Grants
-	}{arg1, arg2})
+		arg1 *auth.Grants
+	}{arg1})
 	stub := fake.StartParticipantSignalStub
 	fakeReturns := fake.startParticipantSignalReturns
-	fake.recordInvocation("StartParticipantSignal", []interface{}{arg1, arg2})
+	fake.recordInvocation("StartParticipantSignal", []interface{}{arg1})
 	fake.startParticipantSignalMutex.Unlock()
 	if stub != nil {
-		return stub(arg1, arg2)
+		return stub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
@@ -167,17 +164,17 @@ func (fake *FakeRTCManager) StartParticipantSignalCallCount() int {
 	return len(fake.startParticipantSignalArgsForCall)
 }
 
-func (fake *FakeRTCManager) StartParticipantSignalCalls(stub func(*websocket.Conn, *auth.Grants) error) {
+func (fake *FakeRTCManager) StartParticipantSignalCalls(stub func(*auth.Grants) error) {
 	fake.startParticipantSignalMutex.Lock()
 	defer fake.startParticipantSignalMutex.Unlock()
 	fake.StartParticipantSignalStub = stub
 }
 
-func (fake *FakeRTCManager) StartParticipantSignalArgsForCall(i int) (*websocket.Conn, *auth.Grants) {
+func (fake *FakeRTCManager) StartParticipantSignalArgsForCall(i int) *auth.Grants {
 	fake.startParticipantSignalMutex.RLock()
 	defer fake.startParticipantSignalMutex.RUnlock()
 	argsForCall := fake.startParticipantSignalArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1
 }
 
 func (fake *FakeRTCManager) StartParticipantSignalReturns(result1 error) {
