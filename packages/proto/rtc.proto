@@ -2,20 +2,26 @@ syntax = "proto3";
 
 package core;
 
+import "room.proto";
+
 message SignalRequest {
+    string participant_id = 1;
     oneof request {
-        StartSession start_session = 1;
+        StartSession start_session = 2;
     }
-    string participant_id = 2;
 }
 
 message SignalResponse {
+    string participant_id = 1;
     oneof response {
-        JoinResponse join_response = 1; 
+        JoinResponse join_response = 2; 
     }
-    string participant_id = 2;
 }
 
-message StartSession {}
+message StartSession {
+    string id = 1;
+    string name = 2;
+    ParticipantPermissions permissions = 3;
+}
 
 message JoinResponse {}
