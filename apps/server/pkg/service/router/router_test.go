@@ -8,8 +8,6 @@ import (
 	"github.com/acerohernan/meet/pkg/config"
 	"github.com/acerohernan/meet/pkg/service/router"
 	"github.com/acerohernan/meet/pkg/service/router/routerfakes"
-	"github.com/acerohernan/meet/pkg/service/rtc"
-	"github.com/acerohernan/meet/pkg/service/rtc/rtcfakes"
 	"github.com/acerohernan/meet/pkg/service/storage"
 	"github.com/acerohernan/meet/pkg/service/storage/storagefakes"
 	"github.com/stretchr/testify/assert"
@@ -63,8 +61,7 @@ func TestRouterMustDeleteNodeAfterStop(t *testing.T) {
 	store := storage.NewLocalStorage()
 	mon := &routerfakes.FakeMonitor{}
 	mess := &routerfakes.FakeMessenger{}
-	man := rtc.NewRTCManager(store)
-	r := router.NewRouter(conf, node, store, mon, mess, man)
+	r := router.NewRouter(conf, node, store, mon, mess)
 
 	_, err := r.Start()
 	assert.NoError(t, err)
@@ -85,7 +82,6 @@ func createTestRouter() *router.Router {
 	store := &storagefakes.FakeObjectStore{}
 	mon := &routerfakes.FakeMonitor{}
 	mess := &routerfakes.FakeMessenger{}
-	man := &rtcfakes.FakeRTCManager{}
 
-	return router.NewRouter(conf, node, store, mon, mess, man)
+	return router.NewRouter(conf, node, store, mon, mess)
 }
