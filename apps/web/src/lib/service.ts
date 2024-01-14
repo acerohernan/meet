@@ -4,8 +4,11 @@ import {
   VerifyRoomRequest,
   VerifyRoomResponse,
 } from "@/proto/twirp/v1/room_pb";
+import { SignalResponse } from "@/proto/rtc_pb";
 
 import { RPC } from "./rpc";
+import { Room } from "./room";
+import { logger } from "./logger";
 
 export class RTCService {
   private rpc: RPC;
@@ -42,27 +45,48 @@ export class RTCService {
     return res;
   }
 
-  async connectToRoom(roomId: string, token: string): Promise<boolean> {
+  async connectToRoom(roomId: string, token: string): Promise<Room> {
     return new Promise((resolve, reject) => {
+      const wsTimeout = setTimeout(reject, 3000);
+
       const query = new URLSearchParams();
       query.append("access_token", token);
       query.append("room_id", roomId);
+
       const wsUrl = this.url.replace("http", "ws");
       const ws = new WebSocket(`${wsUrl}/rtc?${query.toString()}`);
+      ws.binaryType = "arraybuffer";
 
-      ws.onerror = (event) => {
-        console.error("ws error", event);
-        reject(false);
+      const abortFn = () => {
+        clearTimeout(wsTimeout);
+        reject();
       };
 
-      ws.onclose = (event) => {
-        console.error("ws connection closed", event);
-        reject(false);
-      };
+      ws.onerror = abortFn;
+      ws.onclose = abortFn;
 
-      ws.onmessage = (message) => {
-        console.log("new meesage received", message);
-        resolve(true);
+      ws.onmessage = (event) => {
+        let resp: SignalResponse | null = null;
+
+        if (typeof event.data === "string") {
+          const json = JSON.parse(event.data);
+          resp = SignalResponse.fromJson(json);
+        } else if (event.data instanceof ArrayBuffer) {
+          resp = SignalResponse.fromBinary(new Uint8Array(event.data));
+        } else {
+          logger.error(
+            `could not decode websocket message: ${typeof event.data}`
+          );
+          abortFn();
+          return;
+        }
+
+        if (resp.response.case === "joinResponse") {
+          clearTimeout(wsTimeout);
+          resolve(new Room(this.url, token, ws, resp.response.value));
+        } else {
+          abortFn();
+        }
       };
     });
   }
