@@ -119,7 +119,7 @@ func (m *rtcManager) StartParticipantSignal(nodeID string, grants *auth.Grants) 
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	for {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/acerohernan/meet/core"
 	"github.com/acerohernan/meet/pkg/service/auth"
 )
 
@@ -14,5 +15,6 @@ type RTCManager interface {
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 	CreateRoom(ctx context.Context, roomID string) error
-	StartParticipantSignal(grants *auth.Grants) error
+	GetRoom(ctx context.Context, roomID string) (*Room, error)
+	StartParticipantSignal(nodeID string, grants *auth.Grants) (*core.SignalResponse, error)
 }
