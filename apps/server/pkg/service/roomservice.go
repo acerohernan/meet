@@ -3,12 +3,10 @@ package service
 import (
 	"context"
 	"errors"
-	"sync/atomic"
 	"time"
 
 	"github.com/acerohernan/meet/core"
 	twirpv1 "github.com/acerohernan/meet/core/twirp/v1"
-	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
 	"github.com/acerohernan/meet/pkg/service/storage"
@@ -108,7 +106,6 @@ func (s *RoomService) VerifyRoom(ctx context.Context, req *twirpv1.VerifyRoomReq
 }
 
 func confirmExecution(f func() error) error {
-	counter := atomic.Int32{}
 	expired := time.After(APITimeoutDuration)
 
 	for {
@@ -116,12 +113,8 @@ func confirmExecution(f func() error) error {
 		case <-expired:
 			return APITimeoutError
 		default:
-			err := f()
-
-			counter.Add(1)
-			// only return if the execution is successfull
-			if err == nil {
-				logger.Infow("function finished", "executed", counter.Load())
+			if err := f(); err == nil {
+				// only return if the execution is successfull
 				return nil
 			}
 
