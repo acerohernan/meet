@@ -5,6 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
+import { ParticipantPermissions, Room } from "./room_pb.js";
 
 /**
  * @generated from message core.SignalRequest
@@ -16,6 +17,11 @@ export class SignalRequest extends Message<SignalRequest> {
   participantId = "";
 
   /**
+   * @generated from field: string room_id = 4;
+   */
+  roomId = "";
+
+  /**
    * @generated from oneof core.SignalRequest.request
    */
   request: {
@@ -24,6 +30,12 @@ export class SignalRequest extends Message<SignalRequest> {
      */
     value: StartSession;
     case: "startSession";
+  } | {
+    /**
+     * @generated from field: core.CloseSession close_session = 3;
+     */
+    value: CloseSession;
+    case: "closeSession";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
   constructor(data?: PartialMessage<SignalRequest>) {
@@ -35,7 +47,9 @@ export class SignalRequest extends Message<SignalRequest> {
   static readonly typeName = "core.SignalRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "participant_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "room_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "start_session", kind: "message", T: StartSession, oneof: "request" },
+    { no: 3, name: "close_session", kind: "message", T: CloseSession, oneof: "request" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SignalRequest {
@@ -65,6 +79,11 @@ export class SignalResponse extends Message<SignalResponse> {
   participantId = "";
 
   /**
+   * @generated from field: string room_id = 4;
+   */
+  roomId = "";
+
+  /**
    * @generated from oneof core.SignalResponse.response
    */
   response: {
@@ -73,6 +92,12 @@ export class SignalResponse extends Message<SignalResponse> {
      */
     value: JoinResponse;
     case: "joinResponse";
+  } | {
+    /**
+     * @generated from field: core.RefreshToken refresh_token = 3;
+     */
+    value: RefreshToken;
+    case: "refreshToken";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
   constructor(data?: PartialMessage<SignalResponse>) {
@@ -84,7 +109,9 @@ export class SignalResponse extends Message<SignalResponse> {
   static readonly typeName = "core.SignalResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "participant_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "room_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "join_response", kind: "message", T: JoinResponse, oneof: "response" },
+    { no: 3, name: "refresh_token", kind: "message", T: RefreshToken, oneof: "response" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SignalResponse {
@@ -108,6 +135,26 @@ export class SignalResponse extends Message<SignalResponse> {
  * @generated from message core.StartSession
  */
 export class StartSession extends Message<StartSession> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name = "";
+
+  /**
+   * @generated from field: core.ParticipantPermissions permissions = 3;
+   */
+  permissions?: ParticipantPermissions;
+
+  /**
+   * @generated from field: string node_id = 4;
+   */
+  nodeId = "";
+
   constructor(data?: PartialMessage<StartSession>) {
     super();
     proto3.util.initPartial(data, this);
@@ -116,6 +163,10 @@ export class StartSession extends Message<StartSession> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "core.StartSession";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "permissions", kind: "message", T: ParticipantPermissions },
+    { no: 4, name: "node_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): StartSession {
@@ -139,6 +190,11 @@ export class StartSession extends Message<StartSession> {
  * @generated from message core.JoinResponse
  */
 export class JoinResponse extends Message<JoinResponse> {
+  /**
+   * @generated from field: core.Room room = 1;
+   */
+  room?: Room;
+
   constructor(data?: PartialMessage<JoinResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -147,6 +203,7 @@ export class JoinResponse extends Message<JoinResponse> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "core.JoinResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "room", kind: "message", T: Room },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): JoinResponse {
@@ -163,6 +220,74 @@ export class JoinResponse extends Message<JoinResponse> {
 
   static equals(a: JoinResponse | PlainMessage<JoinResponse> | undefined, b: JoinResponse | PlainMessage<JoinResponse> | undefined): boolean {
     return proto3.util.equals(JoinResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message core.CloseSession
+ */
+export class CloseSession extends Message<CloseSession> {
+  constructor(data?: PartialMessage<CloseSession>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.CloseSession";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CloseSession {
+    return new CloseSession().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CloseSession {
+    return new CloseSession().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CloseSession {
+    return new CloseSession().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: CloseSession | PlainMessage<CloseSession> | undefined, b: CloseSession | PlainMessage<CloseSession> | undefined): boolean {
+    return proto3.util.equals(CloseSession, a, b);
+  }
+}
+
+/**
+ * @generated from message core.RefreshToken
+ */
+export class RefreshToken extends Message<RefreshToken> {
+  /**
+   * @generated from field: string token = 1;
+   */
+  token = "";
+
+  constructor(data?: PartialMessage<RefreshToken>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.RefreshToken";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): RefreshToken {
+    return new RefreshToken().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): RefreshToken {
+    return new RefreshToken().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): RefreshToken {
+    return new RefreshToken().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: RefreshToken | PlainMessage<RefreshToken> | undefined, b: RefreshToken | PlainMessage<RefreshToken> | undefined): boolean {
+    return proto3.util.equals(RefreshToken, a, b);
   }
 }
 
