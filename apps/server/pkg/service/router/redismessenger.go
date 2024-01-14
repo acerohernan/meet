@@ -52,8 +52,8 @@ func (m *RedisMessenger) ReadChan() <-chan *core.NodeMessage {
 func (m *RedisMessenger) messageProxy() {
 	for {
 		select {
-		// case ctx.Done:
-		// return
+		case <-m.ctx.Done():
+			return
 		case msg := <-m.redisChan:
 			var nodeMsg core.NodeMessage
 			err := proto.Unmarshal([]byte(msg.Payload), &nodeMsg)
@@ -61,10 +61,7 @@ func (m *RedisMessenger) messageProxy() {
 				logger.Errorw("error at parsing redis message", err)
 				continue
 			}
-			// write to msgChan
-			m.mu.Lock()
 			m.msgChan <- &nodeMsg
-			m.mu.Unlock()
 		}
 	}
 }
