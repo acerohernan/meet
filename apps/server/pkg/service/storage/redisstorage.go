@@ -206,7 +206,7 @@ func (s *RedisStorage) GetNodeForParticipant(ctx context.Context, participantID 
 
 	if err != nil {
 		if err == redis.Nil {
-			return "", NodeForRoomNotFoundErr
+			return "", NodeForParticipantNotFoundErr
 		}
 		return "", nil
 	}
