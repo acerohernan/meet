@@ -6,15 +6,19 @@ import "room.proto";
 
 message SignalRequest {
     string participant_id = 1;
+    string room_id =  4;
     oneof request {
         StartSession start_session = 2;
+        CloseSession close_session = 3;
     }
 }
 
 message SignalResponse {
     string participant_id = 1;
+    string room_id =  4;
     oneof response {
-        JoinResponse join_response = 2; 
+        JoinResponse join_response = 2;
+        RefreshToken refresh_token = 3; 
     }
 }
 
@@ -22,6 +26,15 @@ message StartSession {
     string id = 1;
     string name = 2;
     ParticipantPermissions permissions = 3;
+    string node_id = 4;
 }
 
-message JoinResponse {}
+message JoinResponse {
+    Room room = 1;
+}
+
+message CloseSession {}
+
+message RefreshToken {
+    string token = 1;  
+}
