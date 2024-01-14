@@ -28,7 +28,7 @@ type ObjectStore interface {
 	DeleteParticipant(ctx context.Context, roomID string, participantID string) error
 	ListParticipants(ctx context.Context, roomID string) ([]*core.Participant, error)
 
-	GetNodeForParticipant(ctx context.Context, roomID string) (string, error)
+	GetNodeForParticipant(ctx context.Context, participantID string) (string, error)
 	SetNodeForParticipant(ctx context.Context, participantID string, nodeID string) error
 	DeleteNodeForParticipant(ctx context.Context, participantID string) error
 }
