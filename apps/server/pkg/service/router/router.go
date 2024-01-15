@@ -80,10 +80,12 @@ func (r *Router) Stop() error {
 	close(r.doneChan)
 
 	r.mu.RLock()
-	if err := r.store.DeleteNode(r.ctx, r.localNode.Region, r.localNode.Id); err != nil {
+	node := r.localNode
+	r.mu.RUnlock()
+
+	if err := r.store.DeleteNode(r.ctx, node.Region, node.Id); err != nil {
 		return err
 	}
-	r.mu.RUnlock()
 
 	return nil
 }
