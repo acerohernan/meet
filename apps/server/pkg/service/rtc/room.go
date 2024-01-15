@@ -34,6 +34,25 @@ func (r *Room) ToProto() *core.Room {
 	return r.proto
 }
 
+func (r *Room) Participants() []*Participant {
+	r.mu.RLock()
+	participants := r.participants
+	r.mu.RUnlock()
+
+	pList := make([]*Participant, 0)
+	for _, p := range participants {
+		pList = append(pList, p)
+	}
+
+	return pList
+}
+
+func (r *Room) NumParticipants() int {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return len(r.participants)
+}
+
 func (r *Room) AddParticipant(p *Participant) {
 	r.mu.Lock()
 	r.participants[p.ID()] = p
