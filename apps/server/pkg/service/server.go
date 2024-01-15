@@ -17,10 +17,11 @@ import (
 )
 
 type Server struct {
-	conf       *config.Config
-	httpServer *http.Server
-	router     *router.Router
-	doneChan   chan struct{}
+	conf        *config.Config
+	httpServer  *http.Server
+	router      *router.Router
+	doneChan    chan struct{}
+	rtcMananger rtc.RTCManager
 }
 
 func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc *RoomService, router *router.Router, rtcManager rtc.RTCManager) *Server {
@@ -67,7 +68,8 @@ func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc
 		httpServer: &http.Server{
 			Handler: handler,
 		},
-		router: router,
+		router:      router,
+		rtcMananger: rtcManager,
 	}
 }
 
@@ -113,10 +115,11 @@ func (s *Server) Stop() error {
 		logger.Errorw("error at closing http server", err)
 	}
 
-	// start router
-	err := s.router.Stop()
+	if err := s.rtcMananger.Close(); err != nil {
+		logger.Errorw("error at closing rtc manager", err)
+	}
 
-	if err != nil {
+	if err := s.router.Stop(); err != nil {
 		logger.Errorw("error at stopping router", err)
 	}
 
