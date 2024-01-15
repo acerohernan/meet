@@ -17,4 +17,5 @@ type RTCManager interface {
 	CreateRoom(ctx context.Context, roomID string) error
 	GetRoom(ctx context.Context, roomID string) (*Room, error)
 	StartParticipantSignal(nodeID string, grants *auth.Grants) (*core.SignalResponse, error)
+	Close() error
 }

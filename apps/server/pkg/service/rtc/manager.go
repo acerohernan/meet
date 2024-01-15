@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/acerohernan/meet/core"
+	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
 	"github.com/acerohernan/meet/pkg/service/storage"
@@ -168,4 +169,32 @@ func (m *rtcManager) GetParticipantResponses(participantID string) chan *core.Si
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.participantResponses[participantID]
+}
+
+// Close open connections
+func (m *rtcManager) Close() error {
+	ticker := time.Tick(time.Second)
+
+	logger.Infow("closing rtc manager, waiting for all the participants to close their connections...")
+
+	for {
+		select {
+		case <-ticker:
+			m.mu.RLock()
+			rooms := m.rooms
+			m.mu.RUnlock()
+
+			allEmpty := true
+
+			for _, room := range rooms {
+				if room.NumParticipants() > 0 {
+					allEmpty = false
+				}
+			}
+
+			if allEmpty {
+				return nil
+			}
+		}
+	}
 }
