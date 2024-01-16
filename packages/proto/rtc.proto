@@ -18,7 +18,11 @@ message SignalResponse {
     string room_id =  4;
     oneof response {
         JoinResponse join_response = 2;
-        RefreshToken refresh_token = 3; 
+        RefreshToken refresh_token = 3;
+        RoomUpdated room_updated = 5; 
+        ParticipantConnected participant_connected = 6; 
+        ParticipantUpdated participant_updated = 7; 
+        ParticipantDisconnected participant_disconnected = 8; 
     }
 }
 
@@ -31,10 +35,27 @@ message StartSession {
 
 message JoinResponse {
     Room room = 1;
+    repeated Participant participants = 2;
 }
 
 message CloseSession {}
 
 message RefreshToken {
     string token = 1;  
+}
+
+message RoomUpdated {
+    Room room = 1;
+}
+
+message ParticipantConnected {
+    Participant participant = 1;
+}
+
+message ParticipantUpdated {
+    Participant participant = 1;
+}
+
+message ParticipantDisconnected {
+    string participant_id = 1;
 }
