@@ -5,7 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
-import { ParticipantPermissions, Room } from "./room_pb.js";
+import { Participant, ParticipantPermissions, Room } from "./room_pb.js";
 
 /**
  * @generated from message core.SignalRequest
@@ -195,6 +195,11 @@ export class JoinResponse extends Message<JoinResponse> {
    */
   room?: Room;
 
+  /**
+   * @generated from field: repeated core.Participant participants = 2;
+   */
+  participants: Participant[] = [];
+
   constructor(data?: PartialMessage<JoinResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -204,6 +209,7 @@ export class JoinResponse extends Message<JoinResponse> {
   static readonly typeName = "core.JoinResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "room", kind: "message", T: Room },
+    { no: 2, name: "participants", kind: "message", T: Participant, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): JoinResponse {
