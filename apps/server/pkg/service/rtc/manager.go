@@ -23,6 +23,7 @@ type rtcManager struct {
 	mu        sync.RWMutex
 	store     storage.ObjectStore
 	router    *router.Router
+	authSvc   *auth.AuthService
 	localNode *core.Node
 
 	// map of participantID -> SignalResponse
@@ -32,11 +33,12 @@ type rtcManager struct {
 	rooms map[string]*Room
 }
 
-func NewRTCManager(localNode *core.Node, store storage.ObjectStore, router *router.Router) RTCManager {
+func NewRTCManager(localNode *core.Node, store storage.ObjectStore, router *router.Router, authSvc *auth.AuthService) RTCManager {
 	m := &rtcManager{
 		mu:                   sync.RWMutex{},
 		store:                store,
 		ctx:                  context.Background(),
+		authSvc:              authSvc,
 		router:               router,
 		localNode:            localNode,
 		rooms:                make(map[string]*Room),
