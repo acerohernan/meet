@@ -34,6 +34,12 @@ func (r *Room) ToProto() *core.Room {
 	return r.proto
 }
 
+func (r *Room) ParticipantsMap() map[string]*Participant {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return r.participants
+}
+
 func (r *Room) Participants() []*Participant {
 	r.mu.RLock()
 	participants := r.participants
@@ -42,6 +48,19 @@ func (r *Room) Participants() []*Participant {
 	pList := make([]*Participant, 0)
 	for _, p := range participants {
 		pList = append(pList, p)
+	}
+
+	return pList
+}
+
+func (r *Room) ParticipantsProto() []*core.Participant {
+	r.mu.RLock()
+	participants := r.participants
+	r.mu.RUnlock()
+
+	pList := make([]*core.Participant, 0)
+	for _, p := range participants {
+		pList = append(pList, p.ToProto())
 	}
 
 	return pList
