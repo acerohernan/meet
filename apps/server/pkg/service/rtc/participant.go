@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/acerohernan/meet/core"
+	"github.com/acerohernan/meet/pkg/service/auth"
 	"github.com/acerohernan/meet/pkg/service/router"
 )
 
@@ -32,6 +33,12 @@ func (p *Participant) ID() string {
 	return p.proto.Id
 }
 
+func (p *Participant) ToProto() *core.Participant {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.proto
+}
+
 func (p *Participant) RoomID() string {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
@@ -42,4 +49,15 @@ func (p *Participant) NodeID() string {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
 	return p.nodeID
+}
+
+func (p *Participant) Grants() *auth.Grants {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return &auth.Grants{
+		ID:        p.proto.Id,
+		Name:      p.proto.Name,
+		RoomID:    p.roomID,
+		RoomAdmin: p.proto.Permissions.RoomAdmin,
+	}
 }
