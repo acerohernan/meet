@@ -98,6 +98,30 @@ export class SignalResponse extends Message<SignalResponse> {
      */
     value: RefreshToken;
     case: "refreshToken";
+  } | {
+    /**
+     * @generated from field: core.RoomUpdated room_updated = 5;
+     */
+    value: RoomUpdated;
+    case: "roomUpdated";
+  } | {
+    /**
+     * @generated from field: core.ParticipantConnected participant_connected = 6;
+     */
+    value: ParticipantConnected;
+    case: "participantConnected";
+  } | {
+    /**
+     * @generated from field: core.ParticipantUpdated participant_updated = 7;
+     */
+    value: ParticipantUpdated;
+    case: "participantUpdated";
+  } | {
+    /**
+     * @generated from field: core.ParticipantDisconnected participant_disconnected = 8;
+     */
+    value: ParticipantDisconnected;
+    case: "participantDisconnected";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
   constructor(data?: PartialMessage<SignalResponse>) {
@@ -112,6 +136,10 @@ export class SignalResponse extends Message<SignalResponse> {
     { no: 4, name: "room_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "join_response", kind: "message", T: JoinResponse, oneof: "response" },
     { no: 3, name: "refresh_token", kind: "message", T: RefreshToken, oneof: "response" },
+    { no: 5, name: "room_updated", kind: "message", T: RoomUpdated, oneof: "response" },
+    { no: 6, name: "participant_connected", kind: "message", T: ParticipantConnected, oneof: "response" },
+    { no: 7, name: "participant_updated", kind: "message", T: ParticipantUpdated, oneof: "response" },
+    { no: 8, name: "participant_disconnected", kind: "message", T: ParticipantDisconnected, oneof: "response" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SignalResponse {
@@ -294,6 +322,154 @@ export class RefreshToken extends Message<RefreshToken> {
 
   static equals(a: RefreshToken | PlainMessage<RefreshToken> | undefined, b: RefreshToken | PlainMessage<RefreshToken> | undefined): boolean {
     return proto3.util.equals(RefreshToken, a, b);
+  }
+}
+
+/**
+ * @generated from message core.RoomUpdated
+ */
+export class RoomUpdated extends Message<RoomUpdated> {
+  /**
+   * @generated from field: core.Room room = 1;
+   */
+  room?: Room;
+
+  constructor(data?: PartialMessage<RoomUpdated>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.RoomUpdated";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "room", kind: "message", T: Room },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): RoomUpdated {
+    return new RoomUpdated().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): RoomUpdated {
+    return new RoomUpdated().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): RoomUpdated {
+    return new RoomUpdated().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: RoomUpdated | PlainMessage<RoomUpdated> | undefined, b: RoomUpdated | PlainMessage<RoomUpdated> | undefined): boolean {
+    return proto3.util.equals(RoomUpdated, a, b);
+  }
+}
+
+/**
+ * @generated from message core.ParticipantConnected
+ */
+export class ParticipantConnected extends Message<ParticipantConnected> {
+  /**
+   * @generated from field: core.Participant participant = 1;
+   */
+  participant?: Participant;
+
+  constructor(data?: PartialMessage<ParticipantConnected>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.ParticipantConnected";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "participant", kind: "message", T: Participant },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ParticipantConnected {
+    return new ParticipantConnected().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ParticipantConnected {
+    return new ParticipantConnected().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ParticipantConnected {
+    return new ParticipantConnected().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ParticipantConnected | PlainMessage<ParticipantConnected> | undefined, b: ParticipantConnected | PlainMessage<ParticipantConnected> | undefined): boolean {
+    return proto3.util.equals(ParticipantConnected, a, b);
+  }
+}
+
+/**
+ * @generated from message core.ParticipantUpdated
+ */
+export class ParticipantUpdated extends Message<ParticipantUpdated> {
+  /**
+   * @generated from field: core.Participant participant = 1;
+   */
+  participant?: Participant;
+
+  constructor(data?: PartialMessage<ParticipantUpdated>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.ParticipantUpdated";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "participant", kind: "message", T: Participant },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ParticipantUpdated {
+    return new ParticipantUpdated().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ParticipantUpdated {
+    return new ParticipantUpdated().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ParticipantUpdated {
+    return new ParticipantUpdated().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ParticipantUpdated | PlainMessage<ParticipantUpdated> | undefined, b: ParticipantUpdated | PlainMessage<ParticipantUpdated> | undefined): boolean {
+    return proto3.util.equals(ParticipantUpdated, a, b);
+  }
+}
+
+/**
+ * @generated from message core.ParticipantDisconnected
+ */
+export class ParticipantDisconnected extends Message<ParticipantDisconnected> {
+  /**
+   * @generated from field: string participant_id = 1;
+   */
+  participantId = "";
+
+  constructor(data?: PartialMessage<ParticipantDisconnected>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.ParticipantDisconnected";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "participant_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ParticipantDisconnected {
+    return new ParticipantDisconnected().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ParticipantDisconnected {
+    return new ParticipantDisconnected().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ParticipantDisconnected {
+    return new ParticipantDisconnected().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ParticipantDisconnected | PlainMessage<ParticipantDisconnected> | undefined, b: ParticipantDisconnected | PlainMessage<ParticipantDisconnected> | undefined): boolean {
+    return proto3.util.equals(ParticipantDisconnected, a, b);
   }
 }
 
