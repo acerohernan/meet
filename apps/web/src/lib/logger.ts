@@ -24,19 +24,19 @@ class AppLogger implements Logger {
 
   debug(msg: string, context?: object): void {
     if (this.level < LogLevel.debug) return;
-    console.log("debug: ", msg, context);
+    console.log("debug:", msg, context);
   }
   info(msg: string, context?: object): void {
     if (this.level < LogLevel.info) return;
-    console.log("info: ", msg, context);
+    console.log("info:", msg, context);
   }
   warn(msg: string, context?: object): void {
     if (this.level < LogLevel.warn) return;
-    console.warn("warn: ", msg, context);
+    console.warn("warn:", msg, context);
   }
   error(msg: string, context?: object): void {
     if (this.level < LogLevel.error) return;
-    console.error("error: ", msg, context);
+    console.error("error:", msg, context);
   }
 }
 
