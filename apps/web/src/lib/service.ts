@@ -9,6 +9,7 @@ import { SignalResponse } from "@/proto/rtc_pb";
 import { RPC } from "./rpc";
 import { Room } from "./room";
 import { logger } from "./logger";
+import { setupStateListener } from "./state-listener";
 
 export class RTCService {
   private rpc: RPC;
@@ -45,7 +46,7 @@ export class RTCService {
     return res;
   }
 
-  async connectToRoom(roomId: string, token: string): Promise<Room> {
+  async connectToRoom(roomId: string, token: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const wsTimeout = setTimeout(reject, 3000);
 
@@ -83,7 +84,13 @@ export class RTCService {
 
         if (resp.response.case === "joinResponse") {
           clearTimeout(wsTimeout);
-          resolve(new Room(this.url, token, ws, resp.response.value));
+
+          // setup listener to feed application state
+          setupStateListener(
+            new Room(this.url, token, ws, resp.response.value)
+          );
+
+          resolve(true);
         } else {
           abortFn();
         }
