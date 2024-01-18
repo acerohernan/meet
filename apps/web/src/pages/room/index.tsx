@@ -1,14 +1,12 @@
-/* import { accessTokenKey } from "@/constants/auth";
-import { useMemo } from "react"; */
-import { useState } from "react";
+import { useAppSelector } from "@/store/store";
 
-import { WaitRoom } from "./wait-room";
 import { Meeting } from "./meeting";
+import { WaitRoom } from "./wait-room";
 
 const RoomPage = () => {
-  const [waitRoom] = useState(true);
+  const room = useAppSelector((state) => state.room.room);
 
-  if (waitRoom) return <WaitRoom />;
+  if (!room) return <WaitRoom />;
 
   return <Meeting />;
 };
