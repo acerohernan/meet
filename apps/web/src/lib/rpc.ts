@@ -2,15 +2,8 @@ import camelcaseKeys from "camelcase-keys";
 
 export class RPC {
   private prefix = "twirp";
-  private headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
 
-  constructor(private url: string, private token: string) {
-    if (token) {
-      this.headers["Authorization"] = `Bearer ${this.token}`;
-    }
-  }
+  constructor(private url: string, public token: string) {}
 
   async request(
     service: string,
@@ -24,7 +17,10 @@ export class RPC {
       fetch(url, {
         method: "POST",
         body: JSON.stringify(body),
-        headers: this.headers,
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          "Content-Type": "application/json",
+        },
       })
         .then((res) => res.json())
         .then((data) => resolve(camelcaseKeys(data, { deep: true })))
