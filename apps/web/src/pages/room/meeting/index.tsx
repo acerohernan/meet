@@ -1,38 +1,26 @@
 import { useState } from "react";
 
-import { Box, Button, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 
-import MicIcon from "@mui/icons-material/Mic";
 import InfoIcon from "@mui/icons-material/Info";
-import MicOffIcon from "@mui/icons-material/MicOff";
-import CallEndIcon from "@mui/icons-material/CallEnd";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
-import VideocamOffOutlinedIcon from "@mui/icons-material/VideocamOffOutlined";
-import PresentToAllOutlinedIcon from "@mui/icons-material/PresentToAllOutlined";
 
 import { ParticipantCard } from "@/components/room/participant-card";
+import { useParticipants, useRoomContext } from "@/context/room/hooks";
+import { MainControls } from "./main-controls";
 
 export const Meeting = () => {
-  const [micOn, setMicOn] = useState(false);
-  const [cameraOn, setCameraOn] = useState(false);
-  const [screenShareOn, setScreenShareOn] = useState(false);
   const [participantsOpened, setParticipantsOpened] = useState(false);
   const [infoOpened, setInfoOpened] = useState(false);
 
-  function toggleMicrophone() {
-    setMicOn((prev) => !prev);
-  }
+  const { room } = useRoomContext();
+  const participants = useParticipants();
 
-  function toggleCamera() {
-    setCameraOn((prev) => !prev);
-  }
+  if (!room) return;
 
-  function toggleScreenShare() {
-    setScreenShareOn((prev) => !prev);
-  }
+  console.log({ participants });
 
   function toggleParticipantsModal() {
     setParticipantsOpened((prev) => !prev);
@@ -123,54 +111,7 @@ export const Meeting = () => {
             wes-rpdt-dqe
           </Typography>
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-
-            justifyContent: "center",
-          }}
-        >
-          <Tooltip title={`Turn ${micOn ? "on" : "off"} microphone`}>
-            <IconButton
-              color={micOn ? "on" : "off"}
-              size="small"
-              onClick={toggleMicrophone}
-            >
-              {micOn ? <MicIcon /> : <MicOffIcon />}
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title={`Turn ${micOn ? "on" : "off"} camera`}>
-            <IconButton
-              color={cameraOn ? "on" : "off"}
-              onClick={toggleCamera}
-              size="small"
-            >
-              {cameraOn ? (
-                <VideocamOutlinedIcon />
-              ) : (
-                <VideocamOffOutlinedIcon />
-              )}
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={screenShareOn ? "Stop presenting" : "Present now"}>
-            <IconButton
-              color={screenShareOn ? "active" : "on"}
-              onClick={toggleScreenShare}
-              size="small"
-            >
-              <PresentToAllOutlinedIcon />
-            </IconButton>
-          </Tooltip>
-          <Button
-            color="error"
-            variant="contained"
-            sx={{ borderRadius: "22px" }}
-          >
-            <CallEndIcon />
-          </Button>
-        </Box>
+        <MainControls />
         <Box
           sx={{
             display: {
