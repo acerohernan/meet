@@ -1,19 +1,99 @@
-import { JoinResponse } from "@/proto/rtc_pb";
-import { Room as RoomModel } from "@/proto/room_pb";
+import EventEmitter from "eventemitter3";
+import { toPlainMessage, type PlainMessage } from "@bufbuild/protobuf";
+
+import {
+  JoinResponse,
+  ParticipantConnected,
+  ParticipantDisconnected,
+  ParticipantUpdated,
+  RefreshToken,
+} from "@/proto/rtc_pb";
+import { Participant, Room as RoomModel } from "@/proto/room_pb";
 
 import { RPC } from "./rpc";
+import { logger } from "./logger";
 import { SignalClient } from "./signal";
+import { RoomEvents, SignalEvents } from "./events";
 
-export class Room {
-  private roomInfo: RoomModel;
+export class Room extends EventEmitter<RoomEventCallbacks> {
   private rpc: RPC;
   private signalClient: SignalClient;
 
-  constructor(url: string, token: string, ws: WebSocket, join: JoinResponse) {
-    if (!join.room) throw Error("no room found in join response");
+  private roomInfo: RoomModel;
+  private participants: Map<string, Participant>;
 
+  constructor(url: string, token: string, ws: WebSocket, join: JoinResponse) {
+    super();
     this.rpc = new RPC(url, token);
     this.signalClient = new SignalClient(ws);
-    this.roomInfo = join.room;
+    this.setupSignalListeners();
+
+    // apply join response information
+    this.roomInfo = join.room!;
+    this.participants = new Map();
+    for (const p of join.participants) {
+      this.participants.set(p.id, p);
+    }
   }
+
+  get information(): PlainMessage<RoomModel> {
+    return toPlainMessage(this.roomInfo);
+  }
+
+  // extend emitter to log all emitted events for development
+  /** @internal */
+  emit<E extends keyof RoomEventCallbacks>(
+    event: E,
+    ...args: EventEmitter.ArgumentMap<RoomEventCallbacks>[Extract<
+      E,
+      keyof RoomEventCallbacks
+    >]
+  ): boolean {
+    logger.info(`room event ${event}`, { event, args });
+    return super.emit(event, ...args);
+  }
+
+  private setupSignalListeners() {
+    this.signalClient
+      .on(SignalEvents.RefreshToken, this.handleRefreshToken)
+      .on(SignalEvents.ParticipantConnected, this.handleParticipantConnected)
+      .on(SignalEvents.ParticipantUpdated, this.handleParticipantUpdated)
+      .on(
+        SignalEvents.ParticipantDisconnected,
+        this.handleParticipantDisconnected
+      );
+  }
+
+  private handleRefreshToken = (res: RefreshToken) => {
+    this.rpc.token = res.token;
+    this.emit(RoomEvents.RefreshToken, res.token);
+  };
+
+  private handleParticipantConnected = (res: ParticipantConnected) => {
+    if (!res.participant) return;
+    this.participants.set(res.participant.id, res.participant);
+    this.emit(RoomEvents.ParticipantConnected, res.participant);
+  };
+
+  private handleParticipantUpdated = (res: ParticipantUpdated) => {
+    if (!res.participant) return;
+    this.participants.set(res.participant.id, res.participant);
+    this.emit(
+      RoomEvents.ParticipantUpdated,
+      res.participant.id,
+      res.participant
+    );
+  };
+
+  private handleParticipantDisconnected = (res: ParticipantDisconnected) => {
+    this.participants.delete(res.participantId);
+    this.emit(RoomEvents.ParticipantDisconnected, res.participantId);
+  };
+}
+
+interface RoomEventCallbacks {
+  refreshToken: (token: string) => void;
+  participantConnected: (participant: Participant) => void;
+  participantUpdated: (participantId: string, participant: Participant) => void;
+  participantDisconnected: (participantID: string) => void;
 }
