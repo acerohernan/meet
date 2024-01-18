@@ -1,10 +1,9 @@
-import { PlainMessage } from "@bufbuild/protobuf";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { Room } from "@/proto/room_pb";
 
 export interface RoomState {
-  room: PlainMessage<Room> | null;
+  room: Room | null;
 }
 
 const initialState: RoomState = {
@@ -15,7 +14,7 @@ const roomSlice = createSlice({
   name: "room",
   initialState,
   reducers: {
-    roomReceived: (state, action: PayloadAction<PlainMessage<Room> | null>) => {
+    roomReceived: (state, action: PayloadAction<Room | null>) => {
       state.room = action.payload;
     },
   },

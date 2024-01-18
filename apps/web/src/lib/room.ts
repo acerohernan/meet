@@ -1,5 +1,4 @@
 import EventEmitter from "eventemitter3";
-import { toPlainMessage, type PlainMessage } from "@bufbuild/protobuf";
 
 import {
   JoinResponse,
@@ -36,8 +35,10 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
     }
   }
 
-  get information(): PlainMessage<RoomModel> {
-    return toPlainMessage(this.roomInfo);
+  get information(): RoomModel {
+    return this.roomInfo.toJson({
+      emitDefaultValues: true,
+    }) as unknown as RoomModel;
   }
 
   // extend emitter to log all emitted events for development
