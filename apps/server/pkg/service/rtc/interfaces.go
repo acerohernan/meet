@@ -12,7 +12,8 @@ import (
 
 //counterfeiter:generate . RTCManager
 type RTCManager interface {
-	ServeHTTP(w http.ResponseWriter, r *http.Request)
+	ServeWS(w http.ResponseWriter, r *http.Request)
+	ServeJoinRequest(w http.ResponseWriter, r *http.Request)
 
 	CreateRoom(ctx context.Context, roomID string) error
 	GetRoom(ctx context.Context, roomID string) (*Room, error)

@@ -19,7 +19,7 @@ var (
 	}
 )
 
-func (m *rtcManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m *rtcManager) ServeWS(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -89,7 +89,6 @@ func (m *rtcManager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 				return
 			case msg := <-m.GetParticipantResponses(grants.ID):
-				logger.Infow("sending response to participant", "msg", msg)
 				// send participant responses
 				data, err := proto.Marshal(msg)
 				if err != nil {

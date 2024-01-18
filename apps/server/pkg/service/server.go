@@ -32,8 +32,9 @@ func NewServer(conf *config.Config, authMiddleware *auth.AuthMiddleware, roomSvc
 		w.Write([]byte("OK"))
 	})
 
-	// rtc endpoint
-	mux.HandleFunc("/rtc", rtcManager.ServeHTTP)
+	// rtc endpoints
+	mux.HandleFunc("/rtc", rtcManager.ServeWS)
+	mux.HandleFunc("/join", rtcManager.ServeJoinRequest)
 
 	// twirp services
 	roomServer := twirpv1.NewRoomServiceServer(roomSvc)

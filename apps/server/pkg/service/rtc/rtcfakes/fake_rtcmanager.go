@@ -48,9 +48,15 @@ type FakeRTCManager struct {
 		result1 *rtc.Room
 		result2 error
 	}
-	ServeHTTPStub        func(http.ResponseWriter, *http.Request)
-	serveHTTPMutex       sync.RWMutex
-	serveHTTPArgsForCall []struct {
+	ServeJoinRequestStub        func(http.ResponseWriter, *http.Request)
+	serveJoinRequestMutex       sync.RWMutex
+	serveJoinRequestArgsForCall []struct {
+		arg1 http.ResponseWriter
+		arg2 *http.Request
+	}
+	ServeWSStub        func(http.ResponseWriter, *http.Request)
+	serveWSMutex       sync.RWMutex
+	serveWSArgsForCall []struct {
 		arg1 http.ResponseWriter
 		arg2 *http.Request
 	}
@@ -252,36 +258,69 @@ func (fake *FakeRTCManager) GetRoomReturnsOnCall(i int, result1 *rtc.Room, resul
 	}{result1, result2}
 }
 
-func (fake *FakeRTCManager) ServeHTTP(arg1 http.ResponseWriter, arg2 *http.Request) {
-	fake.serveHTTPMutex.Lock()
-	fake.serveHTTPArgsForCall = append(fake.serveHTTPArgsForCall, struct {
+func (fake *FakeRTCManager) ServeJoinRequest(arg1 http.ResponseWriter, arg2 *http.Request) {
+	fake.serveJoinRequestMutex.Lock()
+	fake.serveJoinRequestArgsForCall = append(fake.serveJoinRequestArgsForCall, struct {
 		arg1 http.ResponseWriter
 		arg2 *http.Request
 	}{arg1, arg2})
-	stub := fake.ServeHTTPStub
-	fake.recordInvocation("ServeHTTP", []interface{}{arg1, arg2})
-	fake.serveHTTPMutex.Unlock()
+	stub := fake.ServeJoinRequestStub
+	fake.recordInvocation("ServeJoinRequest", []interface{}{arg1, arg2})
+	fake.serveJoinRequestMutex.Unlock()
 	if stub != nil {
-		fake.ServeHTTPStub(arg1, arg2)
+		fake.ServeJoinRequestStub(arg1, arg2)
 	}
 }
 
-func (fake *FakeRTCManager) ServeHTTPCallCount() int {
-	fake.serveHTTPMutex.RLock()
-	defer fake.serveHTTPMutex.RUnlock()
-	return len(fake.serveHTTPArgsForCall)
+func (fake *FakeRTCManager) ServeJoinRequestCallCount() int {
+	fake.serveJoinRequestMutex.RLock()
+	defer fake.serveJoinRequestMutex.RUnlock()
+	return len(fake.serveJoinRequestArgsForCall)
 }
 
-func (fake *FakeRTCManager) ServeHTTPCalls(stub func(http.ResponseWriter, *http.Request)) {
-	fake.serveHTTPMutex.Lock()
-	defer fake.serveHTTPMutex.Unlock()
-	fake.ServeHTTPStub = stub
+func (fake *FakeRTCManager) ServeJoinRequestCalls(stub func(http.ResponseWriter, *http.Request)) {
+	fake.serveJoinRequestMutex.Lock()
+	defer fake.serveJoinRequestMutex.Unlock()
+	fake.ServeJoinRequestStub = stub
 }
 
-func (fake *FakeRTCManager) ServeHTTPArgsForCall(i int) (http.ResponseWriter, *http.Request) {
-	fake.serveHTTPMutex.RLock()
-	defer fake.serveHTTPMutex.RUnlock()
-	argsForCall := fake.serveHTTPArgsForCall[i]
+func (fake *FakeRTCManager) ServeJoinRequestArgsForCall(i int) (http.ResponseWriter, *http.Request) {
+	fake.serveJoinRequestMutex.RLock()
+	defer fake.serveJoinRequestMutex.RUnlock()
+	argsForCall := fake.serveJoinRequestArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeRTCManager) ServeWS(arg1 http.ResponseWriter, arg2 *http.Request) {
+	fake.serveWSMutex.Lock()
+	fake.serveWSArgsForCall = append(fake.serveWSArgsForCall, struct {
+		arg1 http.ResponseWriter
+		arg2 *http.Request
+	}{arg1, arg2})
+	stub := fake.ServeWSStub
+	fake.recordInvocation("ServeWS", []interface{}{arg1, arg2})
+	fake.serveWSMutex.Unlock()
+	if stub != nil {
+		fake.ServeWSStub(arg1, arg2)
+	}
+}
+
+func (fake *FakeRTCManager) ServeWSCallCount() int {
+	fake.serveWSMutex.RLock()
+	defer fake.serveWSMutex.RUnlock()
+	return len(fake.serveWSArgsForCall)
+}
+
+func (fake *FakeRTCManager) ServeWSCalls(stub func(http.ResponseWriter, *http.Request)) {
+	fake.serveWSMutex.Lock()
+	defer fake.serveWSMutex.Unlock()
+	fake.ServeWSStub = stub
+}
+
+func (fake *FakeRTCManager) ServeWSArgsForCall(i int) (http.ResponseWriter, *http.Request) {
+	fake.serveWSMutex.RLock()
+	defer fake.serveWSMutex.RUnlock()
+	argsForCall := fake.serveWSArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
@@ -359,8 +398,10 @@ func (fake *FakeRTCManager) Invocations() map[string][][]interface{} {
 	defer fake.createRoomMutex.RUnlock()
 	fake.getRoomMutex.RLock()
 	defer fake.getRoomMutex.RUnlock()
-	fake.serveHTTPMutex.RLock()
-	defer fake.serveHTTPMutex.RUnlock()
+	fake.serveJoinRequestMutex.RLock()
+	defer fake.serveJoinRequestMutex.RUnlock()
+	fake.serveWSMutex.RLock()
+	defer fake.serveWSMutex.RUnlock()
 	fake.startParticipantSignalMutex.RLock()
 	defer fake.startParticipantSignalMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
