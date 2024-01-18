@@ -72,6 +72,10 @@ export class SignalClient extends EventEmitter<SignalEventCallbacks> {
     }
   }
 
+  close() {
+    this.ws.close();
+  }
+
   private sendRequest(request: SignalRequest["request"]) {
     const req = new SignalRequest({ request });
     try {

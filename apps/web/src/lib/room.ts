@@ -19,7 +19,7 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
   private signalClient: SignalClient;
 
   private roomInfo: RoomModel;
-  private participants: Map<string, Participant>;
+  participants: Map<string, Participant>;
 
   constructor(url: string, token: string, ws: WebSocket, join: JoinResponse) {
     super();
@@ -41,6 +41,10 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
     }) as unknown as RoomModel;
   }
 
+  async closeConnection() {
+    return this.signalClient.close();
+  }
+
   // extend emitter to log all emitted events for development
   /** @internal */
   emit<E extends keyof RoomEventCallbacks>(
@@ -54,6 +58,7 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
     return super.emit(event, ...args);
   }
 
+  /** @internal */
   private setupSignalListeners() {
     this.signalClient
       .on(SignalEvents.RefreshToken, this.handleRefreshToken)
@@ -65,17 +70,20 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
       );
   }
 
+  /** @internal */
   private handleRefreshToken = (res: RefreshToken) => {
     this.rpc.token = res.token;
     this.emit(RoomEvents.RefreshToken, res.token);
   };
 
+  /** @internal */
   private handleParticipantConnected = (res: ParticipantConnected) => {
     if (!res.participant) return;
     this.participants.set(res.participant.id, res.participant);
     this.emit(RoomEvents.ParticipantConnected, res.participant);
   };
 
+  /** @internal */
   private handleParticipantUpdated = (res: ParticipantUpdated) => {
     if (!res.participant) return;
     this.participants.set(res.participant.id, res.participant);
@@ -86,6 +94,7 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
     );
   };
 
+  /** @internal */
   private handleParticipantDisconnected = (res: ParticipantDisconnected) => {
     this.participants.delete(res.participantId);
     this.emit(RoomEvents.ParticipantDisconnected, res.participantId);
