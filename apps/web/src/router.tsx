@@ -5,6 +5,7 @@ import { createBrowserRouter } from "react-router-dom";
 import HomePage from "@/pages/home";
 
 const RoomPage = lazy(() => import("@/pages/room"));
+const RoomContextProvider = lazy(() => import("@/context/room/provider"));
 
 export const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "/:roomId",
-    element: <RoomPage />,
+    element: (
+      <RoomContextProvider>
+        <RoomPage />
+      </RoomContextProvider>
+    ),
   },
 ]);
