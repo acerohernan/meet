@@ -62,8 +62,8 @@ func (m *rtcManager) handleSignalRequest(room *Room, participant *Participant, r
 		}()
 
 	case *core.SignalRequest_CloseSession:
-		room.DeleteParticipant(participant.ID())
-		room.SendParticipantDisconnected(participant.ID())
+		room.DeleteParticipant(req.ParticipantId)
+		room.SendParticipantDisconnected(req.ParticipantId)
 	}
 
 	return nil
