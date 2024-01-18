@@ -5,37 +5,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
-import { useCallback, useMemo, useState } from "react";
 import PresentToAllOutlinedIcon from "@mui/icons-material/PresentToAllOutlined";
 
-import { rtcService } from "@/services/rtc";
-
-import { useToast } from "@/hooks/useToast";
-import { useAccessToken } from "@/hooks/useAccessToken";
+import { useRoomContext } from "@/context/room/hooks";
 
 interface Props {
   isLoading: boolean;
 }
 
 export const WaitRoomControls: React.FC<Props> = ({ isLoading }) => {
-  const params = useParams();
-  const roomId = useMemo(() => params.roomId ?? "", [params]);
-  const toast = useToast();
-  const [token] = useAccessToken({ roomId });
-  const [isConnecting, setIsConnecting] = useState(false);
-
-  const attempConnection = useCallback(async () => {
-    setIsConnecting(true);
-    try {
-      rtcService.connectToRoom(roomId, token);
-    } catch (error) {
-      console.log(error);
-      toast.error("Error at connecting with server via websockets!");
-    } finally {
-      setIsConnecting(false);
-    }
-  }, [roomId, token, toast]);
+  const { loading: isConnecting, token, attempConnection } = useRoomContext();
 
   if (isLoading)
     return (
