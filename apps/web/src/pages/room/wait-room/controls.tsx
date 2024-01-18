@@ -28,15 +28,14 @@ export const WaitRoomControls: React.FC<Props> = ({ isLoading }) => {
   const attempConnection = useCallback(async () => {
     setIsConnecting(true);
     try {
-      const success = rtcService.connectToRoom(roomId, token);
-      console.log({ success });
+      rtcService.connectToRoom(roomId, token);
     } catch (error) {
       console.log(error);
-      toast.error("Error at connecting with server via websocket!");
+      toast.error("Error at connecting with server via websockets!");
     } finally {
       setIsConnecting(false);
     }
-  }, [roomId, toast, token]);
+  }, [roomId, token, toast]);
 
   if (isLoading)
     return (
