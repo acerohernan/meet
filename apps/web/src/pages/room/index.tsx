@@ -1,14 +1,17 @@
-import { useAppSelector } from "@/store/store";
+import { useRoomContext } from "@/context/room/hooks";
 
 import { Meeting } from "./meeting";
 import { WaitRoom } from "./wait-room";
+import { ClosedRoom } from "./closed-room";
 
 const RoomPage = () => {
-  const room = useAppSelector((state) => state.room.room);
+  const { room, closed } = useRoomContext();
 
-  if (!room) return <WaitRoom />;
+  if (room) return <Meeting />;
 
-  return <Meeting />;
+  if (closed) return <ClosedRoom />;
+
+  return <WaitRoom />;
 };
 
 export default RoomPage;
