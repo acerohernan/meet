@@ -12,6 +12,7 @@ var (
 	NodePrefix        = "NO_"
 	RoomPrefix        = "RO_"
 	ParticipantPrefix = "PA_"
+	GuestPrefix       = "GE_"
 )
 
 func NewId(prefix string) string {
