@@ -12,13 +12,17 @@ type Room struct {
 
 	// map of participantID -> Participant
 	participants map[string]*Participant
+
+	// map of guestID -> Guest
+	pendingGuests map[string]*core.Guest
 }
 
 func NewRoom(proto *core.Room) *Room {
 	return &Room{
-		proto:        proto,
-		participants: make(map[string]*Participant),
-		mu:           sync.RWMutex{},
+		proto:         proto,
+		participants:  make(map[string]*Participant),
+		pendingGuests: make(map[string]*core.Guest),
+		mu:            sync.RWMutex{},
 	}
 }
 
@@ -95,4 +99,22 @@ func (r *Room) DeleteParticipant(participantID string) {
 
 	delete(r.participants, participantID)
 	r.proto.NumParticipants -= 1
+}
+
+func (r *Room) AddGuest(guest *core.Guest) {
+	r.mu.Lock()
+	r.pendingGuests[guest.Id] = guest
+	r.mu.Unlock()
+}
+
+func (r *Room) GetGuest(guest *core.Guest) {
+	r.mu.Lock()
+	r.pendingGuests[guest.Id] = guest
+	r.mu.Unlock()
+}
+
+func (r *Room) DeleteGuest(guestID string) {
+	r.mu.Lock()
+	delete(r.pendingGuests, guestID)
+	r.mu.Unlock()
 }
