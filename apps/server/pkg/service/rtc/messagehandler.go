@@ -6,7 +6,6 @@ import (
 )
 
 func (m *rtcManager) handleNodeMessage(msg *core.NodeMessage) error {
-	logger.Infow("node message received", "msg", msg)
 	switch msg.Message.(type) {
 	case *core.NodeMessage_CreateRoom:
 		if err := m.CreateRoom(m.ctx, msg.GetCreateRoom().RoomId); err != nil {
@@ -28,6 +27,25 @@ func (m *rtcManager) handleNodeMessage(msg *core.NodeMessage) error {
 	case *core.NodeMessage_SignalResponse:
 		res := msg.GetSignalResponse()
 		m.ReceiveParticipantResponse(res.ParticipantId, res)
+
+	case *core.NodeMessage_GuestJoinRequest:
+		req := msg.GetGuestJoinRequest()
+		room, err := m.GetRoom(m.ctx, req.RoomId)
+		if err != nil {
+			return err
+		}
+
+		room.AddGuest(req.Guest)
+		room.SendNewGuestRequest(req.Guest)
+
+	case *core.NodeMessage_GuestRequestCancelled:
+		req := msg.GetGuestRequestCancelled()
+		room, err := m.GetRoom(m.ctx, req.RoomId)
+		if err != nil {
+			return err
+		}
+		room.DeleteGuest(req.GuestId)
+		room.SendGuestRequestCancelled(req.GuestId)
 	}
 
 	return nil
