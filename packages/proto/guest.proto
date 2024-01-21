@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package core;
+
+message GuestJoinRequest {
+    string room_id = 1;
+    Guest guest = 2;
+}
+
+message GuestRequestCancelled {
+    string room_id = 1;
+    string guest_id = 2;
+}
+
+message GuestJoinResponse {
+    Guest guest = 1;
+    oneof answer {
+        JoinApproved join_approved = 2;
+        JoinDenied join_denied = 3;
+    } 
+}
+
+message JoinApproved {
+    string access_token = 1;    
+}
+
+message JoinDenied {}
+
+
+message Guest {
+    string id = 1;
+    string name = 2;
+    string node_id = 3;
+}
