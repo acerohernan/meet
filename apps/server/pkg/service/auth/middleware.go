@@ -15,6 +15,8 @@ const (
 var (
 	PublicRoutes = map[string]bool{
 		"/": true,
+		// guest join request endpoint
+		"/join": true,
 		// room service open endpoints
 		"/twirp/twirp.v1.RoomService/CreateRoom": true,
 		"/twirp/twirp.v1.RoomService/VerifyRoom": true,
