@@ -58,6 +58,30 @@ func (p *Participant) SendParticipantDisconnected(participantID string) error {
 		}})
 }
 
+func (p *Participant) SendNewGuestRequest(guest *core.Guest) error {
+	return p.writeResponse(&core.SignalResponse{
+		ParticipantId: p.ID(),
+		RoomId:        p.RoomID(),
+		Response: &core.SignalResponse_NewGuestRequest{
+			NewGuestRequest: &core.NewGuestRequest{
+				Guest: guest,
+			},
+		},
+	})
+}
+
+func (p *Participant) SendGuestRequestCancelled(guestID string) error {
+	return p.writeResponse(&core.SignalResponse{
+		ParticipantId: p.ID(),
+		RoomId:        p.RoomID(),
+		Response: &core.SignalResponse_GuestRequestCancelled{
+			GuestRequestCancelled: &core.GuestReqCancelled{
+				GuestId: guestID,
+			},
+		},
+	})
+}
+
 func (p *Participant) writeResponse(res *core.SignalResponse) error {
 	return p.router.SendNodeMessage(p.NodeID(), &core.NodeMessage{
 		Message: &core.NodeMessage_SignalResponse{
