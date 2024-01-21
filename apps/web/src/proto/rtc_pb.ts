@@ -6,6 +6,7 @@
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 import { Participant, ParticipantPermissions, Room } from "./room_pb.js";
+import { Guest } from "./guest_pb.js";
 
 /**
  * @generated from message core.SignalRequest
@@ -36,6 +37,12 @@ export class SignalRequest extends Message<SignalRequest> {
      */
     value: CloseSession;
     case: "closeSession";
+  } | {
+    /**
+     * @generated from field: core.AnswerGuestRequest answer_guest_request = 5;
+     */
+    value: AnswerGuestRequest;
+    case: "answerGuestRequest";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
   constructor(data?: PartialMessage<SignalRequest>) {
@@ -50,6 +57,7 @@ export class SignalRequest extends Message<SignalRequest> {
     { no: 4, name: "room_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "start_session", kind: "message", T: StartSession, oneof: "request" },
     { no: 3, name: "close_session", kind: "message", T: CloseSession, oneof: "request" },
+    { no: 5, name: "answer_guest_request", kind: "message", T: AnswerGuestRequest, oneof: "request" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SignalRequest {
@@ -122,6 +130,18 @@ export class SignalResponse extends Message<SignalResponse> {
      */
     value: ParticipantDisconnected;
     case: "participantDisconnected";
+  } | {
+    /**
+     * @generated from field: core.NewGuestRequest new_guest_request = 9;
+     */
+    value: NewGuestRequest;
+    case: "newGuestRequest";
+  } | {
+    /**
+     * @generated from field: core.GuestReqCancelled guest_request_cancelled = 10;
+     */
+    value: GuestReqCancelled;
+    case: "guestRequestCancelled";
   } | { case: undefined; value?: undefined } = { case: undefined };
 
   constructor(data?: PartialMessage<SignalResponse>) {
@@ -140,6 +160,8 @@ export class SignalResponse extends Message<SignalResponse> {
     { no: 6, name: "participant_connected", kind: "message", T: ParticipantConnected, oneof: "response" },
     { no: 7, name: "participant_updated", kind: "message", T: ParticipantUpdated, oneof: "response" },
     { no: 8, name: "participant_disconnected", kind: "message", T: ParticipantDisconnected, oneof: "response" },
+    { no: 9, name: "new_guest_request", kind: "message", T: NewGuestRequest, oneof: "response" },
+    { no: 10, name: "guest_request_cancelled", kind: "message", T: GuestReqCancelled, oneof: "response" },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): SignalResponse {
@@ -470,6 +492,198 @@ export class ParticipantDisconnected extends Message<ParticipantDisconnected> {
 
   static equals(a: ParticipantDisconnected | PlainMessage<ParticipantDisconnected> | undefined, b: ParticipantDisconnected | PlainMessage<ParticipantDisconnected> | undefined): boolean {
     return proto3.util.equals(ParticipantDisconnected, a, b);
+  }
+}
+
+/**
+ * @generated from message core.NewGuestRequest
+ */
+export class NewGuestRequest extends Message<NewGuestRequest> {
+  /**
+   * @generated from field: core.Guest guest = 1;
+   */
+  guest?: Guest;
+
+  constructor(data?: PartialMessage<NewGuestRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.NewGuestRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "guest", kind: "message", T: Guest },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): NewGuestRequest {
+    return new NewGuestRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): NewGuestRequest {
+    return new NewGuestRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): NewGuestRequest {
+    return new NewGuestRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: NewGuestRequest | PlainMessage<NewGuestRequest> | undefined, b: NewGuestRequest | PlainMessage<NewGuestRequest> | undefined): boolean {
+    return proto3.util.equals(NewGuestRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message core.AnswerGuestRequest
+ */
+export class AnswerGuestRequest extends Message<AnswerGuestRequest> {
+  /**
+   * @generated from field: string guest_id = 1;
+   */
+  guestId = "";
+
+  /**
+   * @generated from oneof core.AnswerGuestRequest.answer
+   */
+  answer: {
+    /**
+     * @generated from field: core.GuestAccepted guest_accepted = 2;
+     */
+    value: GuestAccepted;
+    case: "guestAccepted";
+  } | {
+    /**
+     * @generated from field: core.GuestDenied guest_denied = 3;
+     */
+    value: GuestDenied;
+    case: "guestDenied";
+  } | { case: undefined; value?: undefined } = { case: undefined };
+
+  constructor(data?: PartialMessage<AnswerGuestRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.AnswerGuestRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "guest_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "guest_accepted", kind: "message", T: GuestAccepted, oneof: "answer" },
+    { no: 3, name: "guest_denied", kind: "message", T: GuestDenied, oneof: "answer" },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AnswerGuestRequest {
+    return new AnswerGuestRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AnswerGuestRequest {
+    return new AnswerGuestRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AnswerGuestRequest {
+    return new AnswerGuestRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: AnswerGuestRequest | PlainMessage<AnswerGuestRequest> | undefined, b: AnswerGuestRequest | PlainMessage<AnswerGuestRequest> | undefined): boolean {
+    return proto3.util.equals(AnswerGuestRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message core.GuestAccepted
+ */
+export class GuestAccepted extends Message<GuestAccepted> {
+  constructor(data?: PartialMessage<GuestAccepted>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.GuestAccepted";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GuestAccepted {
+    return new GuestAccepted().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GuestAccepted {
+    return new GuestAccepted().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GuestAccepted {
+    return new GuestAccepted().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GuestAccepted | PlainMessage<GuestAccepted> | undefined, b: GuestAccepted | PlainMessage<GuestAccepted> | undefined): boolean {
+    return proto3.util.equals(GuestAccepted, a, b);
+  }
+}
+
+/**
+ * @generated from message core.GuestDenied
+ */
+export class GuestDenied extends Message<GuestDenied> {
+  constructor(data?: PartialMessage<GuestDenied>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.GuestDenied";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GuestDenied {
+    return new GuestDenied().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GuestDenied {
+    return new GuestDenied().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GuestDenied {
+    return new GuestDenied().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GuestDenied | PlainMessage<GuestDenied> | undefined, b: GuestDenied | PlainMessage<GuestDenied> | undefined): boolean {
+    return proto3.util.equals(GuestDenied, a, b);
+  }
+}
+
+/**
+ * @generated from message core.GuestReqCancelled
+ */
+export class GuestReqCancelled extends Message<GuestReqCancelled> {
+  /**
+   * @generated from field: string guest_id = 1;
+   */
+  guestId = "";
+
+  constructor(data?: PartialMessage<GuestReqCancelled>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "core.GuestReqCancelled";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "guest_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GuestReqCancelled {
+    return new GuestReqCancelled().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GuestReqCancelled {
+    return new GuestReqCancelled().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GuestReqCancelled {
+    return new GuestReqCancelled().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GuestReqCancelled | PlainMessage<GuestReqCancelled> | undefined, b: GuestReqCancelled | PlainMessage<GuestReqCancelled> | undefined): boolean {
+    return proto3.util.equals(GuestReqCancelled, a, b);
   }
 }
 
