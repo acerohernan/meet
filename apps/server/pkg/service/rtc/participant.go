@@ -51,6 +51,12 @@ func (p *Participant) NodeID() string {
 	return p.nodeID
 }
 
+func (p *Participant) Permissions() *core.ParticipantPermissions {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	return p.proto.Permissions
+}
+
 func (p *Participant) Grants() *auth.Grants {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
