@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package core;
 
+import "guest.proto";
 import "rtc.proto";
 
 message Node {
@@ -27,8 +28,13 @@ message NodeStats {
 message NodeMessage {
     oneof message {
         CreateRoom create_room = 1;
+        // real time communication with room participants
         SignalRequest signal_request = 2;        
-        SignalResponse signal_response = 3;        
+        SignalResponse signal_response = 3;
+        // guest join flow
+        GuestJoinRequest guest_join_request = 4;        
+        GuestRequestCancelled guest_request_cancelled = 5;        
+        GuestJoinResponse guest_join_response = 6;        
     }
 }
 
