@@ -26,6 +26,9 @@ type rtcManager struct {
 	authSvc   *auth.AuthService
 	localNode *core.Node
 
+	// map of guestID -> chan *GuestJoinResponse
+	requestChans map[string]chan *core.GuestJoinResponse
+
 	// map of participantID -> SignalResponse
 	participantResponses map[string]chan *core.SignalResponse
 
@@ -43,6 +46,7 @@ func NewRTCManager(localNode *core.Node, store storage.ObjectStore, router *rout
 		localNode:            localNode,
 		rooms:                make(map[string]*Room),
 		participantResponses: make(map[string]chan *core.SignalResponse),
+		requestChans:         make(map[string]chan *core.GuestJoinResponse),
 	}
 
 	m.router.OnNodeMessage(m.handleNodeMessage)
@@ -171,6 +175,24 @@ func (m *rtcManager) GetParticipantResponses(participantID string) chan *core.Si
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.participantResponses[participantID]
+}
+
+func (m *rtcManager) AddGuestJoinRequest(guestID string) {
+	m.mu.Lock()
+	m.requestChans[guestID] = make(chan *core.GuestJoinResponse, 1)
+	m.mu.Unlock()
+}
+
+func (m *rtcManager) GetGuestResponseChan(guestID string) chan *core.GuestJoinResponse {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.requestChans[guestID]
+}
+
+func (m *rtcManager) DeleteGuestJoinRequest(guestID string) {
+	m.mu.Lock()
+	delete(m.requestChans, guestID)
+	m.mu.Unlock()
 }
 
 // Close open connections
