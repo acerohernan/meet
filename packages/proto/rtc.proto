@@ -3,6 +3,7 @@ syntax = "proto3";
 package core;
 
 import "room.proto";
+import "guest.proto";
 
 message SignalRequest {
     string participant_id = 1;
@@ -10,7 +11,9 @@ message SignalRequest {
     oneof request {
         StartSession start_session = 2;
         CloseSession close_session = 3;
+        AnswerGuestRequest answer_guest_request = 5;
     }
+    // NEXT ID: 6
 }
 
 message SignalResponse {
@@ -23,6 +26,8 @@ message SignalResponse {
         ParticipantConnected participant_connected = 6; 
         ParticipantUpdated participant_updated = 7; 
         ParticipantDisconnected participant_disconnected = 8; 
+        NewGuestRequest new_guest_request = 9; 
+        GuestReqCancelled guest_request_cancelled = 10; 
     }
 }
 
@@ -58,4 +63,24 @@ message ParticipantUpdated {
 
 message ParticipantDisconnected {
     string participant_id = 1;
+}
+
+message NewGuestRequest {
+    Guest guest = 1; 
+}
+
+message AnswerGuestRequest {
+    string guest_id = 1;
+    oneof answer {
+        GuestAccepted guest_accepted = 2;       
+        GuestDenied guest_denied = 3;       
+    }
+}
+
+message GuestAccepted {}
+
+message GuestDenied {}
+
+message GuestReqCancelled {
+    string guest_id = 1;
 }
