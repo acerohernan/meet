@@ -3,6 +3,8 @@ export const SignalEvents = {
   ParticipantConnected: "participantConnected",
   ParticipantUpdated: "participantUpdated",
   ParticipantDisconnected: "participantDisconnected",
+  GuestRequestReceived: "guestRequestReceived",
+  GuestRequestCancelled: "guestRequestCancelled",
 } as const;
 
 export const RoomEvents = {
@@ -34,4 +36,18 @@ export const RoomEvents = {
    * @param participantID string
    */
   ParticipantDisconnected: "participantDisconnected",
+
+  /**
+   * When guest request is received
+   *
+   * @param guest [[Guest]]
+   */
+  GuestRequestReceived: "guestRequestReceived",
+
+  /**
+   * When guest request is cancelled
+   *
+   * @param guestId string
+   */
+  GuestRequestCancelled: "guestRequestCancelled",
 } as const;

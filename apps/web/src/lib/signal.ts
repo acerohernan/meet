@@ -7,6 +7,8 @@ import {
   type ParticipantDisconnected,
   type ParticipantUpdated,
   type RefreshToken,
+  NewGuestRequest,
+  GuestReqCancelled,
 } from "@/proto/rtc_pb";
 
 import { logger } from "./logger";
@@ -67,6 +69,14 @@ export class SignalClient extends EventEmitter<SignalEventCallbacks> {
         this.emit(SignalEvents.ParticipantDisconnected, msg.value);
         break;
 
+      case "newGuestRequest":
+        this.emit(SignalEvents.GuestRequestReceived, msg.value);
+        break;
+
+      case "guestRequestCancelled":
+        this.emit(SignalEvents.GuestRequestCancelled, msg.value);
+        break;
+
       default:
         logger.error("invalid ws message received", { res });
     }
@@ -91,4 +101,6 @@ interface SignalEventCallbacks {
   participantConnected: (res: ParticipantConnected) => void;
   participantUpdated: (res: ParticipantUpdated) => void;
   participantDisconnected: (res: ParticipantDisconnected) => void;
+  guestRequestReceived: (res: NewGuestRequest) => void;
+  guestRequestCancelled: (res: GuestReqCancelled) => void;
 }
