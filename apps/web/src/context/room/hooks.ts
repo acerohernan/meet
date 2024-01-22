@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 
 import { RoomEvents } from "@/lib/events";
 
+import { Guest } from "@/proto/guest_pb";
 import { Participant } from "@/proto/room_pb";
 
 import { RoomContext } from "./index";
@@ -21,7 +22,7 @@ export const useParticipants = (): Participant[] => {
     if (!room) return;
 
     const handleParticipantChanges = () => {
-      setParticipants(Array.from(room.participants.values()));
+      setParticipants(room.participants);
     };
 
     room.on(RoomEvents.ParticipantConnected, handleParticipantChanges);
@@ -36,4 +37,28 @@ export const useParticipants = (): Participant[] => {
   }, [room]);
 
   return participants;
+};
+
+export const useGuests = (): Guest[] => {
+  const { room } = useRoomContext();
+
+  const [guests, setGuests] = useState<Guest[]>([]);
+
+  useEffect(() => {
+    if (!room) return;
+
+    const handleParticipantChanges = () => {
+      setGuests(room.guests);
+    };
+
+    room.on(RoomEvents.GuestRequestReceived, handleParticipantChanges);
+    room.on(RoomEvents.GuestRequestCancelled, handleParticipantChanges);
+
+    return () => {
+      room.off(RoomEvents.GuestRequestReceived, handleParticipantChanges);
+      room.off(RoomEvents.GuestRequestCancelled, handleParticipantChanges);
+    };
+  }, [room]);
+
+  return guests;
 };
