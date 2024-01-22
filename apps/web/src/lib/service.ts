@@ -5,6 +5,7 @@ import {
   VerifyRoomResponse,
 } from "@/proto/twirp/v1/room_pb";
 import { SignalResponse } from "@/proto/rtc_pb";
+import { GuestJoinResponse } from "@/proto/guest_pb";
 
 import { RPC } from "./rpc";
 import { Room } from "./room";
@@ -45,7 +46,36 @@ export class RTCService {
     return res;
   }
 
-  async connectToRoom(roomId: string, token: string): Promise<Room> {
+  askJoin(roomId: string, name: string) {
+    return new Promise<GuestJoinResponse | null>((resolve, reject) => {
+      const query = new URLSearchParams();
+      query.set("roomId", roomId);
+      query.set("name", name);
+
+      const eventSource = new EventSource(
+        `${this.url}/join?${query.toString()}`
+      );
+
+      eventSource.onopen = () => {
+        console.log("event source connected");
+      };
+
+      eventSource.onmessage = (event) => {
+        // TODO: resolve GuestJoinResponse
+        console.log({ event });
+        resolve(null);
+      };
+
+      eventSource.onerror = (event) => {
+        logger.error("error at starting event source for join request", {
+          event,
+        });
+        reject();
+      };
+    });
+  }
+
+  connectToRoom(roomId: string, token: string): Promise<Room> {
     return new Promise((resolve, reject) => {
       const wsTimeout = setTimeout(reject, 3000);
 
