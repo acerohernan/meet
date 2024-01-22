@@ -1,12 +1,15 @@
 import EventEmitter from "eventemitter3";
 
 import {
+  GuestReqCancelled,
   JoinResponse,
+  NewGuestRequest,
   ParticipantConnected,
   ParticipantDisconnected,
   ParticipantUpdated,
   RefreshToken,
 } from "@/proto/rtc_pb";
+import { Guest } from "@/proto/guest_pb";
 import { Participant, Room as RoomModel } from "@/proto/room_pb";
 
 import { RPC } from "./rpc";
@@ -19,7 +22,10 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
   private signalClient: SignalClient;
 
   private roomInfo: RoomModel;
-  participants: Map<string, Participant>;
+
+  private participantsMap: Map<string, Participant>;
+
+  private guestsMap: Map<string, Guest>;
 
   constructor(url: string, token: string, ws: WebSocket, join: JoinResponse) {
     super();
@@ -29,16 +35,25 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
 
     // apply join response information
     this.roomInfo = join.room!;
-    this.participants = new Map();
+    this.participantsMap = new Map();
     for (const p of join.participants) {
-      this.participants.set(p.id, p);
+      this.participantsMap.set(p.id, p);
     }
+    this.guestsMap = new Map();
   }
 
   get information(): RoomModel {
     return this.roomInfo.toJson({
       emitDefaultValues: true,
     }) as unknown as RoomModel;
+  }
+
+  get participants(): Participant[] {
+    return Array.from(this.participantsMap.values());
+  }
+
+  get guests(): Guest[] {
+    return Array.from(this.guestsMap.values());
   }
 
   async closeConnection() {
@@ -67,7 +82,9 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
       .on(
         SignalEvents.ParticipantDisconnected,
         this.handleParticipantDisconnected
-      );
+      )
+      .on(SignalEvents.GuestRequestReceived, this.handleGuestRequestReceived)
+      .on(SignalEvents.GuestRequestCancelled, this.handleGuestRequestCancelled);
   }
 
   /** @internal */
@@ -79,14 +96,14 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
   /** @internal */
   private handleParticipantConnected = (res: ParticipantConnected) => {
     if (!res.participant) return;
-    this.participants.set(res.participant.id, res.participant);
+    this.participantsMap.set(res.participant.id, res.participant);
     this.emit(RoomEvents.ParticipantConnected, res.participant);
   };
 
   /** @internal */
   private handleParticipantUpdated = (res: ParticipantUpdated) => {
     if (!res.participant) return;
-    this.participants.set(res.participant.id, res.participant);
+    this.participantsMap.set(res.participant.id, res.participant);
     this.emit(
       RoomEvents.ParticipantUpdated,
       res.participant.id,
@@ -96,8 +113,24 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
 
   /** @internal */
   private handleParticipantDisconnected = (res: ParticipantDisconnected) => {
-    this.participants.delete(res.participantId);
+    this.participantsMap.delete(res.participantId);
     this.emit(RoomEvents.ParticipantDisconnected, res.participantId);
+  };
+
+  /** @internal */
+  private handleGuestRequestReceived = (res: NewGuestRequest) => {
+    if (!res.guest) {
+      logger.error("guest request received without guest", { res });
+      return;
+    }
+    this.guestsMap.set(res.guest.id, res.guest);
+    this.emit(RoomEvents.GuestRequestReceived, res.guest);
+  };
+
+  /** @internal */
+  private handleGuestRequestCancelled = (res: GuestReqCancelled) => {
+    this.guestsMap.delete(res.guestId);
+    this.emit(RoomEvents.GuestRequestCancelled, res.guestId);
   };
 }
 
@@ -106,4 +139,6 @@ interface RoomEventCallbacks {
   participantConnected: (participant: Participant) => void;
   participantUpdated: (participantId: string, participant: Participant) => void;
   participantDisconnected: (participantID: string) => void;
+  guestRequestReceived: (guest: Guest) => void;
+  guestRequestCancelled: (guestId: string) => void;
 }
