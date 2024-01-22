@@ -54,6 +54,7 @@ const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     <RoomContext.Provider
       value={{
         room,
+        roomId,
         token,
         loading,
         closed,
