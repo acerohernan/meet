@@ -1,14 +1,20 @@
-import { toast } from "react-hot-toast";
+import { Toast, toast } from "react-hot-toast";
 
 export const useToast = () => {
   return {
+    /** renders a success toast */
     success: (msg: string) => toast.success(msg, { position: "bottom-right" }),
+    /** renders an error toast */
     error: (msg: string) => toast.error(msg, { position: "bottom-right" }),
+    /** renders a warning toast */
     warning: (msg: string) =>
       toast(msg, { icon: "⚠️", position: "bottom-right" }),
-    custom: (Element: React.FC) =>
-      toast.custom((t) => (t.visible ? <Element /> : null), {
+    /** renders custom toast element as toast */
+    custom: (Element: React.FC<{ toast: Toast }>) =>
+      toast.custom((t) => (t.visible ? <Element toast={t} /> : null), {
         position: "bottom-right",
       }),
+    /** removes specific toast from screen */
+    dismiss: (toastId: string) => toast.dismiss(toastId),
   };
 };
