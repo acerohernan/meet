@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/useToast";
 import { useAccessToken } from "@/hooks/useAccessToken";
 
 import { RoomContext } from "./index";
+import { DrawerSection } from "./types";
 
 const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const params = useParams();
@@ -19,6 +20,11 @@ const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const [loading, setLoading] = useState(false);
   const [closed, setClosed] = useState(false);
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerSection, setDrawerSection] = useState<DrawerSection>(
+    DrawerSection.People
+  );
 
   const [room, setRoom] = useState<Room | null>(null);
 
@@ -50,6 +56,15 @@ const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     }
   }, [room, toast]);
 
+  const openDrawer = useCallback((section: DrawerSection) => {
+    setDrawerSection(section);
+    setIsDrawerOpen(true);
+  }, []);
+
+  const closeDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+  }, []);
+
   return (
     <RoomContext.Provider
       value={{
@@ -60,6 +75,10 @@ const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         closed,
         attempConnection,
         closeConnection,
+        openDrawer,
+        closeDrawer,
+        drawerSection,
+        isDrawerOpen,
       }}
     >
       {children}

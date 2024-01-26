@@ -1,15 +1,5 @@
-import { Room } from "@/lib/room";
-
 import { createContext } from "react";
 
-interface RoomContext {
-  roomId: string;
-  room: Room | null;
-  loading: boolean;
-  closed: boolean;
-  token: string;
-  attempConnection: () => Promise<boolean>;
-  closeConnection: () => Promise<void>;
-}
+import { type IRoomContext } from "./types";
 
-export const RoomContext = createContext<RoomContext | undefined>(undefined);
+export const RoomContext = createContext<IRoomContext | undefined>(undefined);
