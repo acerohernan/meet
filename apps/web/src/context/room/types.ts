@@ -8,10 +8,6 @@ export interface IRoomContext {
   token: string;
   attempConnection: () => Promise<boolean>;
   closeConnection: () => Promise<void>;
-  isDrawerOpen: boolean;
-  drawerSection: DrawerSection | null;
-  openDrawer: (section: DrawerSection) => void;
-  closeDrawer: () => void;
 }
 
 export enum DrawerSection {
