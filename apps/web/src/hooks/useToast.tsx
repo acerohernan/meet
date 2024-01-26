@@ -6,5 +6,9 @@ export const useToast = () => {
     error: (msg: string) => toast.error(msg, { position: "bottom-right" }),
     warning: (msg: string) =>
       toast(msg, { icon: "⚠️", position: "bottom-right" }),
+    custom: (Element: React.FC) =>
+      toast.custom((t) => (t.visible ? <Element /> : null), {
+        position: "bottom-right",
+      }),
   };
 };
