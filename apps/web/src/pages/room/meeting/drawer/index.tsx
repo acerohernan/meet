@@ -2,15 +2,19 @@ import { Box, IconButton, Typography } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import { useRoomContext } from "@/context/room/hooks";
 import { DrawerSection } from "@/context/room/types";
 
 import { PeopleSection } from "./people-section";
 
 import "./index.css";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { roomActions } from "@/store/room";
 
 export const MeetingDrawer = () => {
-  const { closeDrawer, drawerSection, isDrawerOpen } = useRoomContext();
+  const dispatch = useAppDispatch();
+
+  const isDrawerOpen = useAppSelector((state) => state.room.isDrawerOpen);
+  const drawerSection = useAppSelector((state) => state.room.drawerSection);
 
   let title = "";
   let section = <></>;
@@ -46,7 +50,7 @@ export const MeetingDrawer = () => {
         <Typography variant="h6" fontSize="1.125rem" marginLeft={1}>
           {title}
         </Typography>
-        <IconButton onClick={closeDrawer}>
+        <IconButton onClick={() => dispatch(roomActions.closeDrawer())}>
           <CloseIcon />
         </IconButton>
       </Box>

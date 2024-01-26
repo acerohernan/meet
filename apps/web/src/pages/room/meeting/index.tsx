@@ -1,34 +1,17 @@
-import { useState } from "react";
-
-import { Box, IconButton, Typography } from "@mui/material";
-
-import InfoIcon from "@mui/icons-material/Info";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import { Box, Typography } from "@mui/material";
 
 import { ParticipantCard } from "@/components/room/participant-card";
-import { useParticipants, useRoomContext } from "@/context/room/hooks";
+
+import { useRoomContext } from "@/context/room/hooks";
+
+import { MeetingDrawer } from "./drawer";
 import { MainControls } from "./main-controls";
+import { DrawerControls } from "./drawer-controls";
 
 export const Meeting = () => {
-  const [participantsOpened, setParticipantsOpened] = useState(false);
-  const [infoOpened, setInfoOpened] = useState(false);
-
   const { room } = useRoomContext();
-  const participants = useParticipants();
 
   if (!room) return;
-
-  console.log({ participants });
-
-  function toggleParticipantsModal() {
-    setParticipantsOpened((prev) => !prev);
-  }
-
-  function toggleInfoModal() {
-    setInfoOpened((prev) => !prev);
-  }
 
   return (
     <Box
@@ -46,7 +29,9 @@ export const Meeting = () => {
         sx={{
           flex: 1,
           marginBottom: 2,
-          overflow: "auto",
+          overflowY: "auto",
+          overflowX: "hidden",
+          position: "relative",
         }}
       >
         <Box
@@ -59,8 +44,8 @@ export const Meeting = () => {
           }}
         >
           <ParticipantCard />
-          <ParticipantCard />
         </Box>
+        <MeetingDrawer />
       </Box>
 
       <Box
@@ -112,35 +97,7 @@ export const Meeting = () => {
           </Typography>
         </Box>
         <MainControls />
-        <Box
-          sx={{
-            display: {
-              xs: "none",
-              sm: "flex",
-            },
-            alignItems: "center",
-            justifyContent: "end",
-          }}
-        >
-          <IconButton
-            onClick={toggleInfoModal}
-            sx={{
-              color: infoOpened ? "#8ab4f8" : "white",
-              padding: "14px",
-            }}
-          >
-            {infoOpened ? <InfoIcon /> : <InfoOutlinedIcon />}
-          </IconButton>
-          <IconButton
-            onClick={toggleParticipantsModal}
-            sx={{
-              color: participantsOpened ? "#8ab4f8" : "white",
-              padding: "14px",
-            }}
-          >
-            {participantsOpened ? <PeopleAltIcon /> : <PeopleAltOutlinedIcon />}
-          </IconButton>
-        </Box>
+        <DrawerControls />
       </Box>
     </Box>
   );

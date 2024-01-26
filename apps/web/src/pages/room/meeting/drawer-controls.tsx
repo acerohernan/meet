@@ -1,10 +1,12 @@
+import { useMemo } from "react";
 import { Box, IconButton } from "@mui/material";
 
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 
-import { useRoomContext } from "@/context/room/hooks";
-import { DrawerSection } from "@/context/room/types";
+import { roomActions } from "@/store/room";
+import { DrawerSection } from "@/store/room/types";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 
 interface DrawerControl {
   section: DrawerSection;
@@ -21,9 +23,6 @@ const controls: DrawerControl[] = [
 ];
 
 export const DrawerControls = () => {
-  const { openDrawer, drawerSection, closeDrawer, isDrawerOpen } =
-    useRoomContext();
-
   return (
     <Box
       sx={{
@@ -35,22 +34,40 @@ export const DrawerControls = () => {
         justifyContent: "end",
       }}
     >
-      {controls.map(({ section, activeIcon, inactiveIcon }) => {
-        const isActive = drawerSection === section && isDrawerOpen;
-
-        return (
-          <IconButton
-            onClick={() => (isActive ? closeDrawer() : openDrawer(section))}
-            sx={{
-              color: isActive ? "#8ab4f8" : "white",
-              padding: "14px",
-            }}
-            key={`drawer-controls-${section}`}
-          >
-            {isActive ? activeIcon : inactiveIcon}
-          </IconButton>
-        );
-      })}
+      {controls.map((control) => (
+        <Control control={control} />
+      ))}
     </Box>
+  );
+};
+
+const Control: React.FC<{ control: DrawerControl }> = ({
+  control: { section, activeIcon, inactiveIcon },
+}) => {
+  const dispatch = useAppDispatch();
+
+  const isDrawerOpen = useAppSelector((state) => state.room.isDrawerOpen);
+  const drawerSection = useAppSelector((state) => state.room.drawerSection);
+
+  const isActive = useMemo(
+    () => drawerSection === section && isDrawerOpen,
+    [isDrawerOpen, drawerSection, section]
+  );
+
+  return (
+    <IconButton
+      onClick={() =>
+        isActive
+          ? dispatch(roomActions.closeDrawer())
+          : dispatch(roomActions.openDrawer(section))
+      }
+      sx={{
+        color: isActive ? "#8ab4f8" : "white",
+        padding: "14px",
+      }}
+      key={`drawer-controls-${section}`}
+    >
+      {isActive ? activeIcon : inactiveIcon}
+    </IconButton>
   );
 };
