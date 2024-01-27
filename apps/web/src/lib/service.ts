@@ -10,6 +10,7 @@ import { GuestJoinResponse } from "@/proto/guest_pb";
 import { RPC } from "./rpc";
 import { Room } from "./room";
 import { logger } from "./logger";
+import { setupStateListener } from "./state-listener";
 
 export class RTCService {
   private rpc: RPC;
@@ -114,7 +115,9 @@ export class RTCService {
         if (resp.response.case === "joinResponse") {
           clearTimeout(wsTimeout);
 
-          resolve(new Room(this.url, token, ws, resp.response.value));
+          const room = new Room(this.url, token, ws, resp.response.value);
+          setupStateListener(room);
+          resolve(room);
         } else {
           abortFn();
         }
