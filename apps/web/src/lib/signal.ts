@@ -9,6 +9,7 @@ import {
   type RefreshToken,
   NewGuestRequest,
   GuestReqCancelled,
+  AnswerGuestRequest,
 } from "@/proto/rtc_pb";
 
 import { logger } from "./logger";
@@ -86,12 +87,23 @@ export class SignalClient extends EventEmitter<SignalEventCallbacks> {
     this.ws.close();
   }
 
-  private sendRequest(request: SignalRequest["request"]) {
+  sendGuestAnswer(guestId: string, answer: AnswerGuestRequest["answer"]) {
+    return this.sendRequest({
+      case: "answerGuestRequest",
+      value: new AnswerGuestRequest({ guestId, answer }),
+    });
+  }
+
+  private async sendRequest(
+    request: SignalRequest["request"]
+  ): Promise<boolean> {
     const req = new SignalRequest({ request });
     try {
       this.ws.send(req.toBinary());
+      return true;
     } catch (error) {
       logger.error("error sending signal request", { error });
+      return false;
     }
   }
 }
