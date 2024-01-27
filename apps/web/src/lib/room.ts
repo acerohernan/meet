@@ -1,6 +1,9 @@
 import EventEmitter from "eventemitter3";
+import { PlainMessage } from "@bufbuild/protobuf";
 
 import {
+  GuestAccepted,
+  GuestDenied,
   GuestReqCancelled,
   JoinResponse,
   NewGuestRequest,
@@ -23,9 +26,9 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
 
   private roomInfo: RoomModel;
 
-  private participantsMap: Map<string, Participant>;
+  private participantsMap: Map<string, PlainMessage<Participant>>;
 
-  private guestsMap: Map<string, Guest>;
+  private guestsMap: Map<string, PlainMessage<Guest>>;
 
   constructor(url: string, token: string, ws: WebSocket, join: JoinResponse) {
     super();
@@ -37,9 +40,12 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
     this.roomInfo = join.room!;
     this.participantsMap = new Map();
     for (const p of join.participants) {
-      this.participantsMap.set(p.id, p);
+      this.participantsMap.set(p.id, p.toJson() as PlainMessage<Participant>);
     }
     this.guestsMap = new Map();
+    for (const g of join.guests) {
+      this.guestsMap.set(g.id, g.toJson() as PlainMessage<Guest>);
+    }
   }
 
   get information(): RoomModel {
@@ -48,16 +54,46 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
     }) as unknown as RoomModel;
   }
 
-  get participants(): Participant[] {
+  get participants(): PlainMessage<Participant>[] {
     return Array.from(this.participantsMap.values());
   }
 
-  get guests(): Guest[] {
+  get guests(): PlainMessage<Guest>[] {
     return Array.from(this.guestsMap.values());
   }
 
   async closeConnection() {
     return this.signalClient.close();
+  }
+
+  async acceptGuest(guestId: string): Promise<boolean> {
+    const guest = this.guestsMap.get(guestId);
+    if (!guest) return false;
+
+    const success = await this.signalClient.sendGuestAnswer(guestId, {
+      case: "guestAccepted",
+      value: new GuestAccepted(),
+    });
+    if (!success) return false;
+
+    // delete guest from local state
+    this.guestsMap.delete(guestId);
+    return true;
+  }
+
+  async denyGuest(guestId: string): Promise<boolean> {
+    const guest = this.guestsMap.get(guestId);
+    if (!guest) return false;
+
+    const success = await this.signalClient.sendGuestAnswer(guestId, {
+      case: "guestDenied",
+      value: new GuestDenied(),
+    });
+    if (!success) return false;
+
+    // delete guest from local state
+    this.guestsMap.delete(guestId);
+    return true;
   }
 
   // extend emitter to log all emitted events for development
@@ -96,18 +132,24 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
   /** @internal */
   private handleParticipantConnected = (res: ParticipantConnected) => {
     if (!res.participant) return;
-    this.participantsMap.set(res.participant.id, res.participant);
+    this.participantsMap.set(
+      res.participant.id,
+      res.participant.toJson() as PlainMessage<Participant>
+    );
     this.emit(RoomEvents.ParticipantConnected, res.participant);
   };
 
   /** @internal */
   private handleParticipantUpdated = (res: ParticipantUpdated) => {
     if (!res.participant) return;
-    this.participantsMap.set(res.participant.id, res.participant);
+    this.participantsMap.set(
+      res.participant.id,
+      res.participant.toJson() as PlainMessage<Participant>
+    );
     this.emit(
       RoomEvents.ParticipantUpdated,
       res.participant.id,
-      res.participant
+      res.participant.toJson() as PlainMessage<Participant>
     );
   };
 
@@ -123,8 +165,11 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
       logger.error("guest request received without guest", { res });
       return;
     }
-    this.guestsMap.set(res.guest.id, res.guest);
-    this.emit(RoomEvents.GuestRequestReceived, res.guest);
+    this.guestsMap.set(res.guest.id, res.guest.toJson() as PlainMessage<Guest>);
+    this.emit(
+      RoomEvents.GuestRequestReceived,
+      res.guest.toJson() as PlainMessage<Guest>
+    );
   };
 
   /** @internal */
@@ -136,9 +181,12 @@ export class Room extends EventEmitter<RoomEventCallbacks> {
 
 interface RoomEventCallbacks {
   refreshToken: (token: string) => void;
-  participantConnected: (participant: Participant) => void;
-  participantUpdated: (participantId: string, participant: Participant) => void;
+  participantConnected: (participant: PlainMessage<Participant>) => void;
+  participantUpdated: (
+    participantId: string,
+    participant: PlainMessage<Participant>
+  ) => void;
   participantDisconnected: (participantID: string) => void;
-  guestRequestReceived: (guest: Guest) => void;
+  guestRequestReceived: (guest: PlainMessage<Guest>) => void;
   guestRequestCancelled: (guestId: string) => void;
 }

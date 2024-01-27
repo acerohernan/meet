@@ -250,6 +250,11 @@ export class JoinResponse extends Message<JoinResponse> {
    */
   participants: Participant[] = [];
 
+  /**
+   * @generated from field: repeated core.Guest guests = 3;
+   */
+  guests: Guest[] = [];
+
   constructor(data?: PartialMessage<JoinResponse>) {
     super();
     proto3.util.initPartial(data, this);
@@ -260,6 +265,7 @@ export class JoinResponse extends Message<JoinResponse> {
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "room", kind: "message", T: Room },
     { no: 2, name: "participants", kind: "message", T: Participant, repeated: true },
+    { no: 3, name: "guests", kind: "message", T: Guest, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): JoinResponse {
