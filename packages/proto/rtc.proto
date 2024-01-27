@@ -41,6 +41,7 @@ message StartSession {
 message JoinResponse {
     Room room = 1;
     repeated Participant participants = 2;
+    repeated Guest guests = 3;
 }
 
 message CloseSession {}
