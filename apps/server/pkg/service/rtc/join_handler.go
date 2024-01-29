@@ -1,12 +1,14 @@
 package rtc
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/acerohernan/meet/core"
 	"github.com/acerohernan/meet/pkg/config/logger"
 	"github.com/acerohernan/meet/pkg/service/storage"
 	"github.com/acerohernan/meet/pkg/utils"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (m *rtcManager) ServeJoinRequest(w http.ResponseWriter, r *http.Request) {
@@ -69,27 +71,33 @@ func (m *rtcManager) ServeJoinRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer func() {
+		m.DeleteGuestJoinRequest(guest.Id)
+
+		// notify request cancellation to room
+		msg := &core.NodeMessage{
+			Message: &core.NodeMessage_GuestRequestCancelled{
+				GuestRequestCancelled: &core.GuestRequestCancelled{
+					RoomId:  roomID,
+					GuestId: guest.Id,
+				},
+			},
+		}
+		m.router.SendNodeMessage(nodeID, msg)
+		return
+	}()
+
 	for {
 		select {
-		case <-r.Context().Done():
-			logger.Infow("client disconnected")
-			m.DeleteGuestJoinRequest(guest.Id)
-
-			// notify request cancellation to room
-			msg := &core.NodeMessage{
-				Message: &core.NodeMessage_GuestRequestCancelled{
-					GuestRequestCancelled: &core.GuestRequestCancelled{
-						RoomId:  roomID,
-						GuestId: guest.Id,
-					},
-				},
-			}
-			m.router.SendNodeMessage(nodeID, msg)
-			return
-
 		case msg := <-m.GetGuestResponseChan(guest.Id):
-			// TODO: send answer to guest
-			logger.Infow("join answer recieved", "ans", msg)
+			jsonBytes, err := protojson.Marshal(msg)
+			if err != nil {
+				logger.Errorw("error at parsing message guest join answer", err)
+				return
+			}
+
+			fmt.Fprintf(w, "data: %s\n\n", string(jsonBytes))
+			w.(http.Flusher).Flush()
 			return
 		}
 	}
