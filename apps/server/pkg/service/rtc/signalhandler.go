@@ -24,6 +24,7 @@ func (m *rtcManager) handleSignalRequest(room *Room, participant *Participant, r
 		if err := p.SendJoinResponse(&core.JoinResponse{
 			Room:         room.ToProto(),
 			Participants: room.ParticipantsProto(),
+			Guests:       room.GuestsProto(),
 		}); err != nil {
 			return err
 		}

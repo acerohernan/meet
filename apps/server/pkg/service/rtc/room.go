@@ -70,6 +70,19 @@ func (r *Room) ParticipantsProto() []*core.Participant {
 	return pList
 }
 
+func (r *Room) GuestsProto() []*core.Guest {
+	r.mu.RLock()
+	guests := r.pendingGuests
+	r.mu.RUnlock()
+
+	gList := make([]*core.Guest, 0)
+	for _, g := range guests {
+		gList = append(gList, g)
+	}
+
+	return gList
+}
+
 func (r *Room) NumParticipants() int {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -107,10 +120,10 @@ func (r *Room) AddGuest(guest *core.Guest) {
 	r.mu.Unlock()
 }
 
-func (r *Room) GetGuest(guest *core.Guest) {
-	r.mu.Lock()
-	r.pendingGuests[guest.Id] = guest
-	r.mu.Unlock()
+func (r *Room) GetGuest(guestId string) *core.Guest {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return r.pendingGuests[guestId]
 }
 
 func (r *Room) DeleteGuest(guestID string) {
