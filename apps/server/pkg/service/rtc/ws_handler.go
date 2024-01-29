@@ -125,9 +125,22 @@ func (m *rtcManager) ServeWS(w http.ResponseWriter, r *http.Request) {
 
 		switch messageType {
 		case websocket.BinaryMessage:
-			err := proto.Unmarshal(payload, msg)
-			if err == nil {
-				logger.Infow("signal request received", "msg", msg)
+			if err := proto.Unmarshal(payload, msg); err != nil {
+				logger.Errorw("error at decoding message", err)
+				break
+			}
+
+			msg.ParticipantId = grants.ID
+			msg.RoomId = grants.RoomID
+
+			// send signal request to actual room
+			if err := m.router.SendNodeMessage(nodeID, &core.NodeMessage{
+				Message: &core.NodeMessage_SignalRequest{
+					SignalRequest: msg,
+				},
+			}); err != nil {
+				logger.Errorw("error at sending signal request to nodeID", err, "nodeID", nodeID)
+				break
 			}
 		default:
 			logger.Errorw("ws message not supported", errors.New("ws msg type not supported"), "type", messageType)
