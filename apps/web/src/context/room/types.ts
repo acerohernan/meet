@@ -6,7 +6,8 @@ export interface IRoomContext {
   loading: boolean;
   closed: boolean;
   token: string;
-  attempConnection: () => Promise<boolean>;
+  setToken: (token: string) => void;
+  attempConnection: (customToken?: string) => Promise<boolean>;
   closeConnection: () => Promise<void>;
 }
 

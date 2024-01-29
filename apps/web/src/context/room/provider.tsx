@@ -14,7 +14,7 @@ import { RoomContext } from "./index";
 const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const params = useParams();
   const roomId = useMemo(() => params.roomId ?? "", [params]);
-  const [token] = useAccessToken({ roomId });
+  const [token, setToken] = useAccessToken({ roomId });
   const toast = useToast();
 
   const [loading, setLoading] = useState(false);
@@ -22,10 +22,11 @@ const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const [room, setRoom] = useState<Room | null>(null);
 
-  const attempConnection = useCallback(async () => {
+  const attempConnection = async (customToken?: string) => {
+    const accessToken = typeof customToken === "string" ? customToken : token;
     setLoading(true);
     try {
-      const room = await rtcService.connectToRoom(roomId, token);
+      const room = await rtcService.connectToRoom(roomId, accessToken);
       setRoom(room);
       return true;
     } catch (error) {
@@ -35,7 +36,7 @@ const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [roomId, token, toast]);
+  };
 
   const closeConnection = useCallback(async () => {
     try {
@@ -56,6 +57,7 @@ const RoomContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
         room,
         roomId,
         token,
+        setToken,
         loading,
         closed,
         attempConnection,
