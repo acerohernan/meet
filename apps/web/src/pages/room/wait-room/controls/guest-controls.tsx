@@ -8,7 +8,7 @@ import { useRoomContext } from "@/context/room/hooks";
 
 export const GuestControls = () => {
   const toast = useToast();
-  const { roomId } = useRoomContext();
+  const { roomId, attempConnection, setToken } = useRoomContext();
 
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
@@ -18,15 +18,28 @@ export const GuestControls = () => {
   const askToJoin = useCallback(async () => {
     setLoading(true);
     try {
-      const answer = await rtcService.askJoin(roomId, name);
-      console.log({ answer });
+      const res = await rtcService.askJoin(roomId, name);
+      if (!res) throw new Error("empty response");
+
+      switch (res.answer.case) {
+        case "joinDenied": {
+          toast.error("An administrator rejected your request");
+          return;
+        }
+        case "joinApproved": {
+          const token = res.answer.value.accessToken;
+          setToken(token);
+          await attempConnection(token);
+          return;
+        }
+      }
     } catch (error) {
       logger.error("error at asking join", { error });
       toast.error("Error at asking to join, please try it later.");
     } finally {
       setLoading(false);
     }
-  }, [toast, name, roomId]);
+  }, [roomId, name, toast, setToken, attempConnection]);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
