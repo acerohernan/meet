@@ -10,7 +10,7 @@ import { GuestJoinResponse } from "@/proto/guest_pb";
 import { RPC } from "./rpc";
 import { Room } from "./room";
 import { logger } from "./logger";
-import { setupStateListener } from "./state-listener";
+import { setupRoomListeners } from "./listeners";
 
 export class RTCService {
   private rpc: RPC;
@@ -57,21 +57,32 @@ export class RTCService {
         `${this.url}/join?${query.toString()}`
       );
 
-      eventSource.onopen = () => {
-        console.log("event source connected");
+      const abortHandler = () => {
+        eventSource.close();
+        reject(null);
       };
 
       eventSource.onmessage = (event) => {
-        // TODO: resolve GuestJoinResponse
-        console.log({ event });
-        resolve(null);
+        // close the connection at first message
+        eventSource.close();
+
+        if (!event.data) return abortHandler();
+
+        try {
+          const data = JSON.parse(event.data);
+          const msg = new GuestJoinResponse().fromJson(data);
+          resolve(msg);
+        } catch (error) {
+          logger.error("error at parsing join message", { data: event.data });
+          abortHandler();
+        }
       };
 
       eventSource.onerror = (event) => {
         logger.error("error at starting event source for join request", {
           event,
         });
-        reject();
+        abortHandler();
       };
     });
   }
@@ -116,7 +127,7 @@ export class RTCService {
           clearTimeout(wsTimeout);
 
           const room = new Room(this.url, token, ws, resp.response.value);
-          setupStateListener(room);
+          setupRoomListeners(room);
           resolve(room);
         } else {
           abortFn();
