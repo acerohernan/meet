@@ -1,4 +1,12 @@
+import { useEffect } from "react";
 import { Box, Typography } from "@mui/material";
+import { PlainMessage } from "@bufbuild/protobuf";
+
+import { Guest } from "@/proto/guest_pb";
+
+import { RoomEvents } from "@/lib/events";
+
+import { useToast } from "@/hooks/useToast";
 
 import { ParticipantCard } from "@/components/room/participant-card";
 
@@ -7,11 +15,23 @@ import { useRoomContext } from "@/context/room/hooks";
 import { MeetingDrawer } from "./drawer";
 import { MainControls } from "./main-controls";
 import { DrawerControls } from "./drawer-controls";
+import { NewGuestToast } from "./toasts/new-guest-toast";
 
 export const Meeting = () => {
   const { room } = useRoomContext();
+  const toast = useToast();
 
-  if (!room) return;
+  useEffect(() => {
+    if (!room) return;
+
+    const handleGuestReceived = (guest: PlainMessage<Guest>) =>
+      toast.custom(NewGuestToast, { guest });
+
+    room.on(RoomEvents.GuestRequestReceived, handleGuestReceived);
+    return () => {
+      room.off(RoomEvents.GuestRequestReceived, handleGuestReceived);
+    };
+  }, [room, toast]);
 
   return (
     <Box
