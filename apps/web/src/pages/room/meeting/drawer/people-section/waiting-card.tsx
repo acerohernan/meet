@@ -1,5 +1,5 @@
-import { useCallback, useState } from "react";
 import { PlainMessage } from "@bufbuild/protobuf";
+import { memo, useCallback, useState } from "react";
 import { Avatar, Box, Button, Typography } from "@mui/material";
 
 import { roomActions } from "@/store/room";
@@ -15,7 +15,7 @@ interface Props {
   guest: PlainMessage<Guest>;
 }
 
-export const GuestWaitingCard: React.FC<Props> = ({ guest }) => {
+export const GuestWaitingCard: React.FC<Props> = memo(({ guest }) => {
   const toast = useToast();
   const { room } = useRoomContext();
   const dispatch = useAppDispatch();
@@ -79,4 +79,4 @@ export const GuestWaitingCard: React.FC<Props> = ({ guest }) => {
       </Box>
     </Box>
   );
-};
+});

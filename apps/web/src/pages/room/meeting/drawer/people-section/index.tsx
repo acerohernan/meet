@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Box, Button } from "@mui/material";
 
 import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
@@ -5,7 +6,7 @@ import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
 import { WaitingAccordion } from "./waiting-accordion";
 import { ParticipantsAccordion } from "./participants-accordion";
 
-export const PeopleSection = () => {
+export const PeopleSection = memo(() => {
   return (
     <Box>
       <Button
@@ -21,4 +22,4 @@ export const PeopleSection = () => {
       </Box>
     </Box>
   );
-};
+});

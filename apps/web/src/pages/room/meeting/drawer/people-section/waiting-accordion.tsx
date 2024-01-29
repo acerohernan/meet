@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -11,13 +12,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { GuestWaitingCard } from "./waiting-card";
 import { useAppSelector } from "@/store/store";
-import { useRoomContext } from "@/context/room/hooks";
 
-export const WaitingAccordion = () => {
-  const { room } = useRoomContext();
+export const WaitingAccordion = memo(() => {
   const guests = useAppSelector((state) => state.room.guests);
 
-  if (!room) return;
   if (guests.length < 1) return;
 
   return (
@@ -85,4 +83,4 @@ export const WaitingAccordion = () => {
       </Accordion>
     </Box>
   );
-};
+});
