@@ -35,7 +35,7 @@ export const DrawerControls = () => {
       }}
     >
       {controls.map((control) => (
-        <Control control={control} />
+        <Control control={control} key={`drawer-control-${control.section}`} />
       ))}
     </Box>
   );
