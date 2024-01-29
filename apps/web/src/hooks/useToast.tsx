@@ -1,4 +1,4 @@
-import { Toast, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 export const useToast = () => {
   return {
@@ -10,10 +10,13 @@ export const useToast = () => {
     warning: (msg: string) =>
       toast(msg, { icon: "⚠️", position: "bottom-right" }),
     /** renders custom toast element as toast */
-    custom: (Element: React.FC<{ toast: Toast }>) =>
-      toast.custom((t) => (t.visible ? <Element toast={t} /> : null), {
-        position: "bottom-right",
-      }),
+    custom: (Element: React.FC<any>, props?: Record<string, any>) =>
+      toast.custom(
+        (t) => (t.visible ? <Element toast={t} {...props} /> : null),
+        {
+          position: "bottom-right",
+        }
+      ),
     /** removes specific toast from screen */
     dismiss: (toastId: string) => toast.dismiss(toastId),
   };
