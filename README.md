@@ -6,7 +6,7 @@
 
 ![Diagram](docs/diagram.png)
 
-## AWS Diagram
+## AWS Diagram
 
 ![AWS Diagram](docs/aws-diagram.jpeg)
 
