@@ -6,6 +6,10 @@
 
 ![Diagram](docs/diagram.png)
 
+## AWS Diagram
+
+![AWS Diagram](docs/aws-diagram.jpeg)
+
 ## Screenshoots
 
 ![Home page](docs/home-page.png)
